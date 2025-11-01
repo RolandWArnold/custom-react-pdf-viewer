@@ -33,11 +33,9 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "lodash.debounce": "^4.0.8",
     "pdfjs-dist": "4.2.67"
   },
   "devDependencies": {
-    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "react": "^18.3.1",

@@ -1,4 +1,3 @@
-import debounce from 'lodash.debounce';
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import type { PDFFindBar } from './PdfFindBar';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -8,6 +7,8 @@ type PDFLinkService = typeof PDFLinkService;
 type PDFViewer = typeof PDFViewer;
 type PDFPageView = typeof PDFPageView;
 type PDFFindController = typeof PDFFindController;
+
+const RESIZE_DEBOUNCE_TIME_MS = 50;
 
 interface PdfData {
   eventBus?: EventBus;
@@ -53,8 +54,9 @@ interface findControlState {
 }
 class PdfManager {
   private data: PdfData | undefined;
-
   private pdfFindBar: PDFFindBar | null = null;
+
+  private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   public constructor() {}
 
@@ -124,7 +126,8 @@ class PdfManager {
     this.eventBus!.on('pagesdestroy', this.onPagesDestroy);
     this.eventBus!.on('pagechanging', this.onPageChanging);
     this.eventBus!.on('textlayerrendered', this.onTextLayerRendered);
-    window.addEventListener('resize', this.updateScale);
+
+    window.addEventListener('resize', this.handleResize);
   };
 
   public registerFindBar(findBar: PDFFindBar) {
@@ -152,7 +155,12 @@ class PdfManager {
     console.log('#######unmount called');
     this.cancelInit && clearTimeout(this.cancelInit);
     this.eventBus?.off('textlayerrendered', this.onTextLayerRendered); // Check if eventBus exists
-    window.removeEventListener('resize', this.updateScale);
+
+    window.removeEventListener('resize', this.handleResize);
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+
     this.eventBus?.off('pagesdestroy', this.onPagesDestroy);
     this.unregisterFindBar(); // Clean up find bar listeners
     this.data?.loadingTask?.destroy();
@@ -238,9 +246,16 @@ class PdfManager {
     return !!this.data;
   }
 
-  updateScale = debounce(() => {
-    this.pdfViewer!.currentScaleValue = 'page-width';
-  }, 50);
+  handleResize = () => {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = setTimeout(() => {
+      if (this.pdfViewer) {
+        this.pdfViewer.currentScaleValue = 'page-width';
+      }
+    }, RESIZE_DEBOUNCE_TIME_MS); // 50ms debounce delay
+  };
 
   // @ts-ignore
   onPageRendered = ({ source, pageNumber }: { source: PDFPageView; pageNumber: number }) => {
