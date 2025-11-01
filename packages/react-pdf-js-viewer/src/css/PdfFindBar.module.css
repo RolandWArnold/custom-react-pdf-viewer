@@ -1,0 +1,156 @@
+/* packages/react-pdf-js-viewer/src/css/PdfFindBar.module.css */
+
+.doorHanger {
+  position: absolute;
+  border: 1px solid var(--rpjv-findbar-border-color, #b8b8b8);
+  border-top: 0;
+  background-color: var(--rpjv-findbar-bg, #f9f9fa);
+  color: var(--rpjv-main-color, #181819);
+  padding: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 4px 4px;
+  top: 55px; /* Positioned relative to the toolbar container */
+  right: 10px;
+  z-index: 10;
+}
+
+.findbar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.findbarInputContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbarField {
+  padding: 4px 8px;
+  border: 1px solid var(--rpjv-field-border-color, #bbb);
+  background-color: var(--rpjv-field-bg-color, white);
+  color: var(--rpjv-field-color, #060606);
+  border-radius: 3px;
+  outline: none;
+  font-size: 13px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.toolbarField:focus {
+  border-color: #0a84ff;
+}
+
+.findbarInputContainer .toolbarField {
+  flex-grow: 1;
+}
+
+.splitToolbarButton {
+  display: flex;
+  border-radius: 3px;
+  border: 1px solid var(--rpjv-field-border-color, #bbb);
+  background-color: var(--rpjv-field-bg-color, white);
+}
+
+.toolbarButton {
+  background-color: transparent;
+  border: none;
+  color: var(--rpjv-main-color, #181819);
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background-color: var(--rpjv-button-hover-color, #ddd);
+}
+
+.splitToolbarButton .toolbarButton:first-of-type {
+  border-radius: 2px 0 0 2px;
+}
+
+.splitToolbarButton .toolbarButton:last-of-type {
+  border-radius: 0 2px 2px 0;
+}
+
+.splitToolbarButtonSeparator {
+  width: 1px;
+  background-color: var(--rpjv-field-border-color, #bbb);
+  margin: 2px 0;
+}
+
+.findbarOptionsOneContainer,
+.findbarOptionsTwoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbarLabel {
+  font-size: 13px;
+  color: var(--rpjv-main-color, #181819);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.findbarOptionsOneContainer input,
+.findbarOptionsTwoContainer input {
+  margin: 0;
+}
+
+.findbarMessageContainer {
+  font-size: 13px;
+  color: var(--rpjv-main-color, #181819);
+  min-height: 1.5em; /* Prevent layout shift */
+  display: flex;
+  align-items: center;
+}
+
+.findResultsCount {
+  margin-right: 8px;
+}
+
+.toolbarField[data-status="notFound"] {
+  border-color: red !important;
+  background-color: #ffe6e6 !important;
+}
+
+.findResultsCount[data-status="notFound"] {
+  color: red;
+}
+
+.loadingInput {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+}
+
+.loadingInput.pending::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--rpjv-field-border-color, #bbb);
+  border-top-color: var(--rpjv-main-color, #181819);
+  animation: react-pdf-js-viewer-find-spinner 0.8s linear infinite;
+  display: block;
+}
+
+@keyframes react-pdf-js-viewer-find-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,145 @@
+/* packages/react-pdf-js-viewer/src/css/PdfToolbar.module.css */
+
+/* === Main Toolbar Container === */
+.toolbarContainer {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 55px;
+  z-index: 2;
+  background-color: var(--rpjv-toolbar-bg, #f9f9fa);
+  border-bottom: 1px solid var(--rpjv-toolbar-border-color, #b8b8b8);
+  color: var(--rpjv-main-color, #181819);
+  box-sizing: border-box;
+}
+
+/* === Main Toolbar Wrapper === */
+.toolbarMain {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px;
+  height: 100%;
+}
+
+/* === File Info (Left) === */
+.toolbarFileInfo {
+  flex: 1 1 auto;
+  min-width: 0; /* Allow shrinking */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
+  padding-right: 10px;
+}
+
+/* === Page Controls (Middle) === */
+.toolbarControl {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* === Right Side Controls (Wrapper) === */
+.toolbarRight {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Push children (zoom/find) to the right */
+  gap: 10px;
+  min-width: 0; /* Allow shrinking */
+}
+
+/* Common style for all toolbar text buttons */
+.toolbarControl button,
+.toolbarZoomControl button,
+.toolbarFindToggle {
+  background-color: transparent;
+  border: 1px solid var(--rpjv-field-border-color, #bbb);
+  color: var(--rpjv-main-color, #181819);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 0 5px;
+  font-size: 13px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.toolbarControl button:hover,
+.toolbarZoomControl button:hover,
+.toolbarFindToggle:hover {
+  background-color: var(--rpjv-button-hover-color, #ddd);
+}
+
+.toolbarControl button:disabled,
+.toolbarZoomControl button:disabled {
+  background-color: transparent;
+  border-color: var(--rpjv-field-border-color, #bbb);
+  color: var(--rpjv-main-color, #181819);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbarControl button:disabled:hover,
+.toolbarZoomControl button:disabled:hover {
+  background-color: transparent;
+}
+
+/* Page number input */
+.toolbarControl input {
+  width: 40px;
+  text-align: center;
+  margin: 0 5px;
+  font-size: 13px;
+  border: 1px solid var(--rpjv-field-border-color, #bbb);
+  background-color: var(--rpjv-field-bg-color, white);
+  color: var(--rpjv-field-color, #060606);
+  border-radius: 3px;
+  padding: 4px 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  -moz-appearance: textfield;
+}
+.toolbarControl input::-webkit-inner-spin-button,
+.toolbarControl input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.toolbarControl input:focus {
+  border-color: #0a84ff; /* PDF.js focus color */
+}
+
+/* Page count text */
+.toolbarControl span {
+  font-size: 15px;
+  margin: 0 5px;
+}
+
+/* === Zoom Controls (Right) === */
+.toolbarZoomControl {
+  flex: 0 0 auto; /* Don't grow */
+  display: flex;
+  align-items: center;
+}
+
+.toolbarZoomControl span {
+  font-size: 15px;
+  margin: 0 5px;
+  color: var(--rpjv-main-color, #181819);
+  width: 40px; /* Give it space */
+  text-align: center;
+}
+
+/* === Find Toggle Button (Far Right) === */
+.toolbarFindToggle {
+  /* No special styles */
+}
+
+/* Style for the "Find" button when the findbar is open */
+.toolbarFindToggle.toggled {
+  background-color: var(--rpjv-toggled-btn-bg, #00000033);
+  color: var(--rpjv-toggled-btn-color, #000);
+}

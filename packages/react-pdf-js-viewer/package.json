@@ -6,10 +6,19 @@
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "src", "style.css"],
-  "sideEffects": ["dist/style.css"],
-  "publishConfig": { "access": "public" },
-  "engines": { "node": ">=18" },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": [
+    "dist/index.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --project tsconfig.json",
     "dev": "tsup --watch",
@@ -20,9 +29,16 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/index.css"
   },
-  "keywords": ["react", "pdf", "pdf.js", "viewer", "findbar", "document-viewer"],
+  "keywords": [
+    "react",
+    "pdf",
+    "pdf.js",
+    "viewer",
+    "findbar",
+    "document-viewer"
+  ],
   "author": "Roland Arnold",
   "repository": {
     "type": "git",

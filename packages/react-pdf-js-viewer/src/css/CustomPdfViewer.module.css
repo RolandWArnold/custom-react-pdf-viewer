@@ -1,21 +1,22 @@
-.react-pdf-js-viewer-container {
+/* packages/react-pdf-js-viewer/src/css/CustomPdfViewer.module.css */
+.container {
   position: relative;
-  background: #f2f2f2;
+  background: var(--rpjv-container-bg, #f2f2f2);
   overflow: none;
   width: 100%;
   height: fit-content;
 }
 
-.react-pdf-js-viewer {
+.viewer {
   position: absolute;
   width: 100%;
-  top: 55px;
+  top: 55px; /* This must match toolbar height */
   height: calc(var(--copilot-chat-pane-full-height, 100vh) - 55px);
   overflow: auto;
-  background: #f1f5f9;
+  background: var(--rpjv-viewer-bg, #f1f5f9);
 }
 
-.react-pdf-js-viewer-loader {
+.loader {
   width: 100%;
   height: 4px;
   background-color: #f0f0f0;
@@ -23,7 +24,7 @@
   position: relative;
 }
 
-.react-pdf-js-viewer-loader-bar {
+.loaderBar {
   width: 100%;
   height: 100%;
   background-color: orange;

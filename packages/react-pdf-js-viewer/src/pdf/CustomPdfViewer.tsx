@@ -1,10 +1,13 @@
+// packages/react-pdf-js-viewer/src/pdf/CustomPdfViewer.tsx
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFViewer, EventBus, PDFLinkService, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { PdfToolbar } from './PdfToolbar';
+import { PdfFindBar } from './PdfFindBar';
 import type { ToolbarProps } from './ToolbarInterface';
 import PdfManager from './PdfManager';
+import styles from '../css/CustomPdfViewer.module.css';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
@@ -57,17 +60,18 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   const toolbarProps: ToolbarProps = { showFileName: false, fileName: pdfFileName, pdfManager, jumpToPage };
 
   return (
-<div className="react-pdf-js-viewer-container">
+    // 3. Use the 'styles' object for classNames
+    <div className={styles.container}>
       <PdfToolbar {...toolbarProps} />
+      {pdfManager.eventBus && <PdfFindBar eventBus={pdfManager.eventBus} />}
+
       {isLoading ? (
-        <div className="react-pdf-js-viewer-loader">
-          <div className="react-pdf-js-viewer-loader-bar" />
+        <div className={styles.loader}>
+          <div className={styles.loaderBar} />
         </div>
       ) : (
-        <div className="react-pdf-js-viewer pdfViewer" ref={viewerRef} />
+        <div className={`${styles.viewer} pdfViewer`} ref={viewerRef} />
       )}
     </div>
   );
 };
-
-export default CustomPdfViewer;

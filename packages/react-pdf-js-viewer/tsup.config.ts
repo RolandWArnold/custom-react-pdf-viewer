@@ -1,8 +1,8 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/style.css'],
-  format: ['esm'],                 // ESM only (fixes import.meta warning)
+  entry: ['src/index.ts'],
+  format: ['esm'],
   dts: false,
   sourcemap: true,
   clean: true,
@@ -12,4 +12,5 @@ export default defineConfig({
   outDir: 'dist',
   external: ['react', 'react-dom', 'pdfjs-dist'],
   target: 'es2023',
+  cssModules: true,
 });

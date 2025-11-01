@@ -1,5 +1,5 @@
+// packages/react-pdf-js-viewer/src/pdf/PdfManager.ts
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
-import type { PDFFindBar } from './PdfFindBar';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';
 type EventBus = typeof EventBus;
@@ -40,22 +40,8 @@ interface CharTrackInfo {
   endCharOffset: number;
 }
 
-interface matchCount {
-  matchesCount: {
-    current: number;
-    total: number;
-  };
-}
-
-interface findControlState {
-  state: number;
-  previous: string;
-  matchesCount: object;
-}
 class PdfManager {
   private data: PdfData | undefined;
-  private pdfFindBar: PDFFindBar | null = null;
-
   private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   public constructor() {}
@@ -70,10 +56,14 @@ class PdfManager {
     initialPageNo: number
   ) => {
     console.log('#######initViewer called');
-    const eventBus = new EventConstructor();
-    const linkService = new LinkServiceConstructor();
-    const findController = new findControllerConstructor({ eventBus, linkService: linkService, updateMatchesCountOnProgress: true });
-    const pdfViewer = new ViewerConstructor({ eventBus, container: viewerElement, linkService, findController, viewer: viewerElement });
+    const eventBus = this.data?.eventBus || new EventConstructor();
+    const linkService = this.data?.linkService || new LinkServiceConstructor({ eventBus });
+    const findController = this.data?.findController || new findControllerConstructor({ eventBus, linkService: linkService, updateMatchesCountOnProgress: true });
+
+    // The PDFViewer *must* be new if the container is new, or if it doesn't exist, but it should re-use the other services.
+    const pdfViewer = this.data?.pdfViewer && this.data.viewerElement === viewerElement
+      ? this.data.pdfViewer
+      : new ViewerConstructor({ eventBus, container: viewerElement, linkService, findController, viewer: viewerElement });
     linkService.setViewer(pdfViewer);
 
     this.cancelInit && clearTimeout(this.cancelInit);
@@ -130,39 +120,20 @@ class PdfManager {
     window.addEventListener('resize', this.handleResize);
   };
 
-  public registerFindBar(findBar: PDFFindBar) {
-    this.pdfFindBar = findBar;
-    // Now, register the event listeners that update the find bar UI
-    this.eventBus!._on('updatefindcontrolstate', this.webViewerUpdateFindControlState);
-    this.eventBus!._on('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
-  }
-
-  public unregisterFindBar() {
-    this.eventBus!._off('updatefindcontrolstate', this.webViewerUpdateFindControlState);
-    this.eventBus!._off('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
-    this.pdfFindBar = null;
-  }
-
-  webViewerUpdateFindMatchesCount = ({ matchesCount }: matchCount) => {
-    this.pdfFindBar?.updateResultsCount(matchesCount);
-  };
-
-  webViewerUpdateFindControlState = ({ state, previous, matchesCount }: findControlState) => {
-    this.pdfFindBar?.updateUIState(state, previous, matchesCount);
+  public toggleFindBar = () => {
+    this.eventBus?.dispatch('findbar-toggle');
   };
 
   unmount = () => {
     console.log('#######unmount called');
     this.cancelInit && clearTimeout(this.cancelInit);
-    this.eventBus?.off('textlayerrendered', this.onTextLayerRendered); // Check if eventBus exists
-
+    this.eventBus?.off('textlayerrendered', this.onTextLayerRendered);
     window.removeEventListener('resize', this.handleResize);
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
-
     this.eventBus?.off('pagesdestroy', this.onPagesDestroy);
-    this.unregisterFindBar(); // Clean up find bar listeners
+
     this.data?.loadingTask?.destroy();
     this.pdfViewer?.pdfDocument?.destroy();
     this.eventBus?.off('pagesinit', this.onPagesInit);
@@ -254,7 +225,7 @@ class PdfManager {
       if (this.pdfViewer) {
         this.pdfViewer.currentScaleValue = 'page-width';
       }
-    }, RESIZE_DEBOUNCE_TIME_MS); // 50ms debounce delay
+    }, RESIZE_DEBOUNCE_TIME_MS);
   };
 
   // @ts-ignore
@@ -374,6 +345,7 @@ class PdfManager {
       const lastCharCount = haystackText.slice(0, matchIndex + 1 + needleText.length).split(lastChar).length - 1;
 
       const charTrackInfo = this.trackCharCounts(textLayer.textDivs, firstChar, firstCharCount, lastChar, lastCharCount);
+
       if (charTrackInfo.startDivIndex === -1 || charTrackInfo.endDivIndex === -1) return;
 
       if (charTrackInfo.startDivIndex === charTrackInfo.endDivIndex) {
