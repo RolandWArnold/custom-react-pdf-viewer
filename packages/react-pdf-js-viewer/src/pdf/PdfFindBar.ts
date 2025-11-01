@@ -167,7 +167,7 @@ class PDFFindBar {
     button.classList.toggle('toggled', toggle);
     button.setAttribute('aria-expanded', JSON.stringify(toggle));
 
-    view?.classList.toggle('hidden', !toggle);
+    view?.classList.toggle('react-pdf-js-viewer-hidden', !toggle);
   }
 
   close() {

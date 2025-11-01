@@ -173,11 +173,9 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   };
 
   return (
-    // This container is now relative, allowing the findbar
-    // to be positioned absolutely inside it.
-    <div className="pdf-viewer-toolbar-container" ref={toolbarRefInDom}>
-      <div className="pdf-viewer-toolbar-main">
-        <div className="pdf-viewer-toolbar-file-info">
+    <div className="react-pdf-js-viewer-toolbar-container" ref={toolbarRefInDom}>
+      <div className="react-pdf-js-viewer-toolbar-main">
+        <div className="react-pdf-js-viewer-toolbar-file-info">
           <span title={fileName}>
             {showFileName ? fileName : ''}
           </span>
@@ -185,7 +183,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
 
         {numPages > 0 && (
           <>
-            <div className="pdf-viewer-toolbar-control">
+            <div className="react-pdf-js-viewer-toolbar-control">
               <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage}>
                 Prev
               </button>
@@ -201,7 +199,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
               </button>
             </div>
 
-            <div className="pdf-viewer-toolbar-zoom-control">
+            <div className="react-pdf-js-viewer-toolbar-zoom-control">
               <button onClick={handleZoomOut} disabled={!canZoomOut}>
                 -
               </button>
@@ -210,10 +208,10 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
                 +
               </button>
             </div>
-            <div className="pdf-viewer-toolbar-right">
+            <div className="react-pdf-js-viewer-toolbar-right">
               <button
                 ref={findButtonRef}
-                className="pdf-viewer-toolbar-find-toggle"
+                className="react-pdf-js-viewer-toolbar-find-toggle"
                 title="Find in Document"
               >
                 <span>Find</span>
@@ -222,31 +220,36 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
           </>
         )}
       </div>
-      <div id="findbar" className="hidden doorHanger" ref={findBarRef}>
-        <div id="findbarInputContainer">
-          <span className="loadingInput end">
+
+      {/* This DIV now uses all the prefixed classes */}
+      <div
+        className="react-pdf-js-viewer-findbar react-pdf-js-viewer-hidden react-pdf-js-viewer-doorHanger"
+        ref={findBarRef}
+      >
+        <div className="react-pdf-js-viewer-findbar-input-container">
+          <span className="react-pdf-js-viewer-loadingInput end">
             <input
               ref={findInputRef}
-              className="toolbarField" /* This class is styled by pdf_viewer.css */
+              className="react-pdf-js-viewer-toolbarField"
               title="Find"
               placeholder="Find in document…"
               data-l10n-id="pdfjs-find-input"
               aria-invalid="false"
             />
           </span>
-          <div className="splitToolbarButton">
+          <div className="react-pdf-js-viewer-splitToolbarButton">
             <button
               ref={findPreviousRef}
-              className="toolbarButton" /* This class is styled by pdf_viewer.css */
+              className="react-pdf-js-viewer-toolbarButton"
               title="Find the previous occurrence of the phrase"
               data-l10n-id="pdfjs-find-previous-button"
             >
               <span>Previous</span>
             </button>
-            <div className="splitToolbarButtonSeparator"></div>
+            <div className="react-pdf-js-viewer-splitToolbarButtonSeparator"></div>
             <button
               ref={findNextRef}
-              className="toolbarButton" /* This class is styled by pdf_viewer.css */
+              className="react-pdf-js-viewer-toolbarButton"
               title="Find the next occurrence of the phrase"
               data-l10n-id="pdfjs-find-next-button"
             >
@@ -255,52 +258,51 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
           </div>
         </div>
 
-        <div id="findbarOptionsOneContainer">
-          <input type="checkbox" id="pdf-viewer-find-highlight-all" ref={highlightAllRef} className="toolbarField" />
+        <div className="react-pdf-js-viewer-findbar-options-one-container">
+          <input type="checkbox" id="pdf-viewer-find-highlight-all" ref={highlightAllRef} className="react-pdf-js-viewer-toolbarField" />
           <label
             htmlFor="pdf-viewer-find-highlight-all"
-            className="toolbarLabel"
+            className="react-pdf-js-viewer-toolbarLabel"
             data-l10n-id="pdfjs-find-highlight-checkbox"
           >
             Highlight All
           </label>
-          <input type="checkbox" id="pdf-viewer-find-match-case" ref={matchCaseRef} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-match-case" ref={matchCaseRef} className="react-pdf-js-viewer-toolbarField" />
           <label
             htmlFor="pdf-viewer-find-match-case"
-            className="toolbarLabel"
+            className="react-pdf-js-viewer-toolbarLabel"
             data-l10n-id="pdfjs-find-match-case-checkbox-label"
           >
             Match Case
           </label>
         </div>
-        <div id="findbarOptionsTwoContainer">
-          <input type="checkbox" id="pdf-viewer-find-match-diacritics" ref={matchDiacriticsRef} className="toolbarField" />
+        <div className="react-pdf-js-viewer-findbar-options-two-container">
+          <input type="checkbox" id="pdf-viewer-find-match-diacritics" ref={matchDiacriticsRef} className="react-pdf-js-viewer-toolbarField" />
           <label
             htmlFor="pdf-viewer-find-match-diacritics"
-            className="toolbarLabel"
+            className="react-pdf-js-viewer-toolbarLabel"
             data-l10n-id="pdfjs-find-match-diacritics-checkbox-label"
           >
             Match Diacritics
           </label>
-          <input type="checkbox" id="pdf-viewer-find-entire-word" ref={entireWordRef} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-entire-word" ref={entireWordRef} className="react-pdf-js-viewer-toolbarField" />
           <label
             htmlFor="pdf-viewer-find-entire-word"
-            className="toolbarLabel"
+            className="react-pdf-js-viewer-toolbarLabel"
             data-l10n-id="pdfjs-find-entire-word-checkbox-label"
           >
             Whole Words
           </label>
         </div>
 
-        <div id="findbarMessageContainer" aria-live="polite">
+        <div className="react-pdf-js-viewer-findbar-message-container" aria-live="polite">
           <span
             ref={findResultsCountRef}
-            className="findResultsCount toolbarLabel" /* Use class from pdf_viewer.css */
+            className="react-pdf-js-viewer-findResultsCount react-pdf-js-viewer-toolbarLabel"
           ></span>
-          <span ref={findMsgRef} className="findMsg toolbarLabel"></span> {/* Use class from pdf_viewer.css */ }
+          <span ref={findMsgRef} className="react-pdf-js-viewer-findbar-msg react-pdf-js-viewer-toolbarLabel"></span>
         </div>
       </div>
     </div>
   );
 };
-

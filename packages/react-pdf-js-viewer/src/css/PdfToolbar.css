@@ -1,7 +1,7 @@
 /* packages/react-pdf-js-viewer/src/css/PdfToolbar.css */
 
 /* === Main Toolbar Container === */
-.pdf-viewer-toolbar-container {
+.react-pdf-js-viewer-toolbar-container {
   position: sticky;
   top: 0;
   width: 100%;
@@ -14,7 +14,7 @@
 }
 
 /* === Main Toolbar Wrapper === */
-.pdf-viewer-toolbar-main {
+.react-pdf-js-viewer-toolbar-main {
   display: flex;
   align-items: center;
   padding: 0 10px;
@@ -24,7 +24,7 @@
 
 
 /* === File Info (Left) === */
-.pdf-viewer-toolbar-file-info {
+.react-pdf-js-viewer-toolbar-file-info {
   flex: 1 1 auto;
   min-width: 0; /* Allow shrinking */
   white-space: nowrap;
@@ -36,7 +36,7 @@
 }
 
 /* === Page Controls (Middle) === */
-.pdf-viewer-toolbar-control {
+.react-pdf-js-viewer-toolbar-control {
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
@@ -44,7 +44,7 @@
 }
 
 /* === Right Side Controls (Wrapper) === */
-.pdf-viewer-toolbar-right {
+.react-pdf-js-viewer-toolbar-right {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
@@ -54,9 +54,9 @@
 }
 
 /* Common style for all toolbar text buttons */
-.pdf-viewer-toolbar-control button,
-.pdf-viewer-toolbar-zoom-control button,
-.pdf-viewer-toolbar-find-toggle {
+.react-pdf-js-viewer-toolbar-control button,
+.react-pdf-js-viewer-toolbar-zoom-control button,
+.react-pdf-js-viewer-toolbar-find-toggle {
   background-color: transparent;
   border: 1px solid var(--field-border-color, #bbb);
   color: var(--main-color, #181819);
@@ -68,14 +68,14 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.pdf-viewer-toolbar-control button:hover,
-.pdf-viewer-toolbar-zoom-control button:hover,
-.pdf-viewer-toolbar-find-toggle:hover {
+.react-pdf-js-viewer-toolbar-control button:hover,
+.react-pdf-js-viewer-toolbar-zoom-control button:hover,
+.react-pdf-js-viewer-toolbar-find-toggle:hover {
   background-color: var(--button-hover-color, #ddd);
 }
 
-.pdf-viewer-toolbar-control button:disabled,
-.pdf-viewer-toolbar-zoom-control button:disabled {
+.react-pdf-js-viewer-toolbar-control button:disabled,
+.react-pdf-js-viewer-toolbar-zoom-control button:disabled {
   background-color: transparent;
   border-color: var(--field-border-color, #bbb);
   color: var(--main-color, #181819);
@@ -83,13 +83,13 @@
   cursor: not-allowed;
 }
 
-.pdf-viewer-toolbar-control button:disabled:hover,
-.pdf-viewer-toolbar-zoom-control button:disabled:hover {
+.react-pdf-js-viewer-toolbar-control button:disabled:hover,
+.react-pdf-js-viewer-toolbar-zoom-control button:disabled:hover {
   background-color: transparent;
 }
 
 /* Page number input */
-.pdf-viewer-toolbar-control input {
+.react-pdf-js-viewer-toolbar-control input {
   width: 40px;
   text-align: center;
   margin: 0 5px;
@@ -108,30 +108,30 @@
   /* Hide number input spinners */
   -moz-appearance: textfield;
 }
-.pdf-viewer-toolbar-control input::-webkit-inner-spin-button,
-.pdf-viewer-toolbar-control input::-webkit-outer-spin-button {
+.react-pdf-js-viewer-toolbar-control input::-webkit-inner-spin-button,
+.react-pdf-js-viewer-toolbar-control input::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.pdf-viewer-toolbar-control input:focus {
+.react-pdf-js-viewer-toolbar-control input:focus {
   border-color: #0a84ff; /* PDF.js focus color */
 }
 
 /* Page count text */
-.pdf-viewer-toolbar-control span {
+.react-pdf-js-viewer-toolbar-control span {
   font-size: 15px;
   margin: 0 5px;
 }
 
 /* === Zoom Controls (Right) === */
-.pdf-viewer-toolbar-zoom-control {
+.react-pdf-js-viewer-toolbar-zoom-control {
   flex: 0 0 auto; /* Don't grow */
   display: flex;
   align-items: center;
 }
 
-.pdf-viewer-toolbar-zoom-control span {
+.react-pdf-js-viewer-toolbar-zoom-control span {
   font-size: 15px;
   margin: 0 5px;
   color: var(--main-color, #181819);
@@ -140,12 +140,12 @@
 }
 
 /* === Find Toggle Button (Far Right) === */
-.pdf-viewer-toolbar-find-toggle {
-  /* No margin-left: auto; needed thanks to .pdf-viewer-toolbar-right wrapper */
+.react-pdf-js-viewer-toolbar-find-toggle {
+  /* No margin-left: auto; needed thanks to .react-pdf-js-viewer-toolbar-right wrapper */
 }
 
 /* Style for the "Find" button when the findbar is open */
-.pdf-viewer-toolbar-find-toggle.toggled {
+.react-pdf-js-viewer-toolbar-find-toggle.toggled {
   background-color: var(--toggled-btn-bg-color, #00000033);
   color: var(--toggled-btn-color, #000);
 }
@@ -153,17 +153,17 @@
 
 /*
  ===================================================================
- == ADDED: MISSING PDF.JS UI STYLES FOR FINDBAR
+ == ADDED: MISSING PDF.JS UI STYLES FOR FINDBAR (NOW PREFIXED)
  ===================================================================
  These are the styles from the original pdf_viewer.css that
  your PdfToolbar.tsx component needs to function correctly.
 */
 
-.hidden {
+.react-pdf-js-viewer-hidden {
   display: none !important;
 }
 
-.doorHanger {
+.react-pdf-js-viewer-doorHanger {
   position: absolute;
   /* position: sticky; */
   border: 1px solid var(--toolbar-border-color, #b8b8b8);
@@ -180,20 +180,24 @@
   z-index: 10;
 }
 
-#findbar {
+.react-pdf-js-viewer-findbar {
   width: 320px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-#findbarInputContainer {
+.react-pdf-js-viewer-findbar.react-pdf-js-viewer-wrapContainers {
+  width: 300px;
+}
+
+.react-pdf-js-viewer-findbar-input-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.toolbarField {
+.react-pdf-js-viewer-toolbarField {
   padding: 4px 8px;
   border: 1px solid var(--field-border-color, #bbb);
   background-color: var(--field-bg-color, white);
@@ -205,22 +209,22 @@
   box-sizing: border-box;
 }
 
-.toolbarField:focus {
+.react-pdf-js-viewer-toolbarField:focus {
   border-color: #0a84ff;
 }
 
-#findbarInputContainer .toolbarField {
+.react-pdf-js-viewer-findbar-input-container .react-pdf-js-viewer-toolbarField {
   flex-grow: 1;
 }
 
-.splitToolbarButton {
+.react-pdf-js-viewer-splitToolbarButton {
   display: flex;
   border-radius: 3px;
   border: 1px solid var(--field-border-color, #bbb);
   background-color: var(--field-bg-color, white);
 }
 
-.toolbarButton {
+.react-pdf-js-viewer-toolbarButton {
   background-color: transparent;
   border: none;
   color: var(--main-color, #181819);
@@ -230,33 +234,41 @@
   transition: background-color 0.2s ease;
 }
 
-.toolbarButton:hover {
+.react-pdf-js-viewer-toolbarButton:hover {
   background-color: var(--button-hover-color, #ddd);
 }
 
-.splitToolbarButton .toolbarButton:first-of-type {
+.react-pdf-js-viewer-splitToolbarButton .react-pdf-js-viewer-toolbarButton:first-of-type {
   border-radius: 2px 0 0 2px;
 }
 
-.splitToolbarButton .toolbarButton:last-of-type {
+.react-pdf-js-viewer-splitToolbarButton .react-pdf-js-viewer-toolbarButton:last-of-type {
   border-radius: 0 2px 2px 0;
 }
 
-.splitToolbarButtonSeparator {
+.react-pdf-js-viewer-splitToolbarButtonSeparator {
   width: 1px;
   background-color: var(--field-border-color, #bbb);
   margin: 2px 0;
 }
 
-#findbarOptionsOneContainer,
-#findbarOptionsTwoContainer {
+.react-pdf-js-viewer-findbar-options-one-container,
+.react-pdf-js-viewer-findbar-options-two-container {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.toolbarLabel {
+.react-pdf-js-viewer-findbar.react-pdf-js-viewer-wrapContainers .react-pdf-js-viewer-findbar-options-one-container,
+.react-pdf-js-viewer-findbar.react-pdf-js-viewer-wrapContainers .react-pdf-js-viewer-findbar-options-two-container {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+
+.react-pdf-js-viewer-toolbarLabel {
   font-size: 13px;
   color: var(--main-color, #181819);
   display: flex;
@@ -266,12 +278,12 @@
 }
 
 /* Ensure checkboxes are aligned with labels */
-#findbarOptionsOneContainer input,
-#findbarOptionsTwoContainer input {
+.react-pdf-js-viewer-findbar-options-one-container input,
+.react-pdf-js-viewer-findbar-options-two-container input {
   margin: 0;
 }
 
-#findbarMessageContainer {
+.react-pdf-js-viewer-findbar-message-container {
   font-size: 13px;
   color: var(--main-color, #181819);
   min-height: 1.5em; /* Prevent layout shift */
@@ -279,21 +291,21 @@
   align-items: center;
 }
 
-.findResultsCount {
+.react-pdf-js-viewer-findResultsCount {
   margin-right: 8px;
 }
 
-.toolbarField[data-status="notFound"] {
+.react-pdf-js-viewer-toolbarField[data-status="notFound"] {
   border-color: red !important;
   background-color: #ffe6e6 !important;
 }
 
-.findMsg[data-status="notFound"] {
+.react-pdf-js-viewer-findbar-msg[data-status="notFound"] {
   color: red;
 }
 
 /* Support for loading spinner icon */
-.loadingInput {
+.react-pdf-js-viewer-loadingInput {
   position: relative;
   display: flex;
   flex-grow: 1;
@@ -303,7 +315,7 @@
   The loading icon is defined in pdf_viewer.css, but we can
   create a simple CSS-only one here as a fallback.
 */
-.loadingInput[data-status="pending"]::after {
+.react-pdf-js-viewer-loadingInput[data-status="pending"]::after {
   content: "";
   position: absolute;
   right: 8px;
@@ -314,11 +326,11 @@
   border-radius: 50%;
   border: 2px solid var(--field-border-color, #bbb);
   border-top-color: var(--main-color, #181819);
-  animation: pdf-viewer-find-spinner 0.8s linear infinite;
+  animation: react-pdf-js-viewer-find-spinner 0.8s linear infinite;
   display: block;
 }
 
-@keyframes pdf-viewer-find-spinner {
+@keyframes react-pdf-js-viewer-find-spinner {
   0% {
     transform: rotate(0deg);
   }
@@ -326,4 +338,3 @@
     transform: rotate(360deg);
   }
 }
-

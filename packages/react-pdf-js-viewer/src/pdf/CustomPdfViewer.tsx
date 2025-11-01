@@ -57,14 +57,14 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   const toolbarProps: ToolbarProps = { showFileName: false, fileName: pdfFileName, pdfManager, jumpToPage };
 
   return (
-    <div className="pdf-viewer-container">
+<div className="react-pdf-js-viewer-container">
       <PdfToolbar {...toolbarProps} />
       {isLoading ? (
-        <div className="pdf-viewer-loader">
-          <div className="pdf-viewer-loader-bar" />
+        <div className="react-pdf-js-viewer-loader">
+          <div className="react-pdf-js-viewer-loader-bar" />
         </div>
       ) : (
-        <div className="pdfViewer" ref={viewerRef} />
+        <div className="react-pdf-js-viewer pdfViewer" ref={viewerRef} />
       )}
     </div>
   );
