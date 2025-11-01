@@ -2,10 +2,14 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: ['src/index.ts', 'src/style.css'],
-  format: ['cjs', 'esm'], // Build for commonJS and ESmodules
-  dts: true, // Generate typescript declaration files
-  splitting: false,
+  format: ['esm'],                 // ESM only (fixes import.meta warning)
+  dts: false,
   sourcemap: true,
   clean: true,
-  external: ['react', 'react-dom'], // Don't bundle react
+  bundle: true,
+  minify: true,
+  splitting: false,
+  outDir: 'dist',
+  external: ['react', 'react-dom', 'pdfjs-dist'],
+  target: 'es2023',
 });

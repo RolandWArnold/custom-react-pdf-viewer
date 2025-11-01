@@ -3,6 +3,8 @@
 A small, self-contained demo that renders PDFs with Mozilla pdf.js and a custom toolbar
 (Prev/Next, page jump, zoom, and find bar) in React + TypeScript.
 
+This package is ESM-only. Works in Vite/Rollup/Next/webpack 5+.
+
 ## Quick start
 ```bash
 yarn install

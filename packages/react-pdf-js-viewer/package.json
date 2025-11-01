@@ -1,29 +1,36 @@
 {
   "name": "react-pdf-js-viewer",
-  "version": "0.1.0",
-  "private": false,
-  "description": "A React component wrapper for PDF.js",
-  "main": "./dist/index.js",
+  "version": "1.0.0",
+  "description": "A lightweight React wrapper around PDF.js with toolbar and find bar.",
+  "license": "MIT",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": ["dist", "src", "style.css"],
+  "sideEffects": ["dist/style.css"],
+  "publishConfig": { "access": "public" },
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --project tsconfig.json",
+    "dev": "tsup --watch",
+    "prepare": "yarn build"
+  },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
     },
     "./style.css": "./dist/style.css"
   },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+  "keywords": ["react", "pdf", "pdf.js", "viewer", "findbar", "document-viewer"],
+  "author": "Roland Arnold",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roland-arnold/react-pdf-js-viewer.git"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
@@ -31,8 +38,10 @@
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.9",
-    "@types/react": "^18.2.66",
-    "react": "^18.2.0",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.2.2",
     "tsup": "^8.0.2",
     "glob": "^10.4.1"
