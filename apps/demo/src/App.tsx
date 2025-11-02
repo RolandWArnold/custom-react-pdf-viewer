@@ -2,34 +2,25 @@ import { useEffect, useState } from "react";
 import { CustomPdfViewer } from "react-pdf-js-viewer";
 
 export default function App() {
-  const [blobUrl, setBlobUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  // We just need to store the blob itself, or null
+  const [file, setFile] = useState<Blob | null>(null);
 
   useEffect(() => {
-    let revoke: string | null = null;
     (async () => {
-      // Fetch and create a blob: URL so URL.revokeObjectURL is valid on unmount
+      // Fetch and get the blob
       const res = await fetch("/sample.pdf");
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      revoke = url;
-      setBlobUrl(url);
-      setLoading(false);
+      setFile(blob);
     })();
-
-    return () => {
-      if (revoke) URL.revokeObjectURL(revoke);
-    };
   }, []);
 
-  if (!blobUrl) return <div style={{ padding: 24 }}>Loading…</div>;
+  if (!file) return <div style={{ padding: 24 }}>Loading…</div>;
 
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
       <CustomPdfViewer
         fileName="sample.pdf"
-        blobUrl={blobUrl}
-        isLoading={loading}
+        file={file} // Pass the file/blob
         // optional:
         // jumpToPage={3}
         // highlightInfo={{ 0: "some text to highlight on page 1" }}

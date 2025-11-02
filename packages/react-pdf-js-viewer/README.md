@@ -7,8 +7,6 @@ A lightweight React wrapper around PDF.js that includes a fully featured toolbar
 
 This package provides a `CustomPdfViewer` component that handles rendering, page navigation, zoom, and text search, with sane defaults and CSS custom properties for easy styling.
 
-
-
 ## Features
 
 * **Full Toolbar:** Page navigation, page number input, and zoom controls.
@@ -16,6 +14,10 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 * **Simple API:** Just pass a `blobUrl` to the component.
 * **Custom Styling:** Use CSS custom properties to override default styles.
 * **TypeScript:** Written in TypeScript with types included.
+
+## Screenshot
+
+![react-pdf-js-viewer demo](../../assets/screenshot-1.png)
 
 ## Installation
 

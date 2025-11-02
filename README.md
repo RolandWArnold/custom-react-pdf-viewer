@@ -1,33 +1,35 @@
-# Custom PDF Viewer (React + Vite + pdf.js)
+# react-pdf-js-viewer (Monorepo)
 
-A small, self-contained demo that renders PDFs with Mozilla pdf.js and a custom toolbar
-(Prev/Next, page jump, zoom, and find bar) in React + TypeScript.
+This repository is a monorepo containing the `react-pdf-js-viewer` package and its demo application.
+* **`packages/react-pdf-js-viewer`**: The published npm package.
+* **`apps/demo`**: A Vite + React demo app for local development.
 
-This package is ESM-only. Works in Vite/Rollup/Next/webpack 5+.
+## Screenshot
 
-## Quick start
-```bash
-yarn install
-yarn dev
-# open the printed URL
-```
+![react-pdf-js-viewer demo](./assets/screenshot-1.png)
 
-## Build / Preview
-```bash
-yarn build && yarn preview
-# then open http://localhost:4173
-```
 
-## Key files
+## 🚀 Local Development
 
-- `src/pdf/CustomPdfViewer.tsx` — React wrapper + pdf.js worker config
-- `src/pdf/PdfManager.ts` — pdf.js wiring (EventBus, Viewer, LinkService, FindController)
-- `src/pdf/PdfToolbar.tsx` — toolbar controls
-- `src/assets/*` — viewer icons from pdf.js
-- `public/sample.pdf` — demo document (replace with your own as needed)
+This project uses **pnpm** as a package manager.
 
-## License
+1.  **Install dependencies:**
+    ```bash
+    pnpm install
+    ```
 
-Apache-2.0 © 2025 Roland Arnold (see LICENSE).
-This project bundles Apache-2.0 components from Mozilla PDF.js (see NOTICE).
-See THIRD_PARTY_LICENSES.md for other dependencies.
+2.  **Run the demo app:**
+    This will start the demo app on `http://localhost:5173`.
+    ```bash
+    pnpm demo
+    ```
+
+3.  **Build the library:**
+    To run a production build of the `react-pdf-js-viewer` package:
+    ```bash
+    pnpm build:lib
+    ```
+
+## 📜 License
+
+This project is licensed under the Apache 2.0 License.
