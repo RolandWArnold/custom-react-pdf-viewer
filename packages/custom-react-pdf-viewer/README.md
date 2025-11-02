@@ -11,7 +11,7 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 
 * **Full Toolbar:** Page navigation, page number input, and zoom controls.
 * **Find Bar:** `Ctrl+F` support, "Highlight All," "Match Case," and other standard find controls.
-* **Simple API:** Just pass a `blobUrl` to the component.
+* **Simple API:** Just pass a `File` or `Blob` object to the component.
 * **Custom Styling:** Use CSS custom properties to override default styles.
 * **TypeScript:** Written in TypeScript with types included.
 
@@ -65,7 +65,7 @@ export default function App() {
 
 | Prop | Type | Description |
 | :--- | :--- | :--- |
-| **`file`** | `Blob | null` | **Required.** The `File` or `Blob` object of the PDF. The component will handle creating and revoking the blob URL. |
+| **`file`** | `Blob \| null` | **Required.** The `File` or `Blob` object of the PDF. The component will handle creating and revoking the blob URL. |
 | `fileName` | `string` | Optional. The name to display in the toolbar. |
 | `isLoading` | `boolean` | Optional. Set to `true` to display the loading bar. Set to `false` when the `blobUrl` is ready. |
 
