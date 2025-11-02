@@ -2,7 +2,7 @@
   "name": "react-pdf-js-viewer",
   "version": "1.0.0",
   "description": "A lightweight React wrapper around PDF.js with toolbar and find bar.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

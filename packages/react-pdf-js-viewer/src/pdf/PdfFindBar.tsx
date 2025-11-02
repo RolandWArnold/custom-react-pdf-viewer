@@ -50,20 +50,6 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault(); // Prevent browser's default find
         setIsOpen(true);
-
-        // When opening via hotkey, re-run the find if query exists
-        if (query) {
-          eventBus.dispatch('find', {
-            source: 'PdfFindBar',
-            type: 'find',
-            query,
-            caseSensitive,
-            entireWord,
-            highlightAll,
-            findPrevious: false,
-            matchDiacritics,
-          });
-        }
       }
     };
 
