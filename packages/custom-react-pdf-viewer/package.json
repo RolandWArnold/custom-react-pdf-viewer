@@ -1,6 +1,6 @@
 {
   "name": "custom-react-pdf-viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight React wrapper around PDF.js with toolbar and find bar.",
   "license": "Apache-2.0",
   "main": "./dist/index.mjs",
@@ -21,8 +21,7 @@
   },
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --project tsconfig.json",
-    "dev": "tsup --watch",
-    "prepare": "yarn build"
+    "dev": "tsup --watch"
   },
   "exports": {
     ".": {
@@ -42,7 +41,7 @@
   "author": "Roland Arnold",
   "repository": {
     "type": "git",
-    "url": "https://github.com/roland-arnold/custom-react-pdf-viewer.git"
+    "url": "https://github.com/RolandWArnold/custom-react-pdf-viewer.git"
   },
   "peerDependencies": {
     "react": ">=18",
