@@ -22,12 +22,17 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 ## Installation
 
 ```bash
-npm install custom-react-pdf-viewer pdfjs-dist
-# OR
-yarn install custom-react-pdf-viewer pdfjs-dist
+# Browser apps
+npm install custom-react-pdf-viewer pdfjs-dist@4.2.67 --no-optional
+# or
+pnpm add custom-react-pdf-viewer pdfjs-dist@4.2.67 --no-optional
+# or
+yarn add custom-react-pdf-viewer pdfjs-dist@4.2.67 --ignore-optional
 ```
 
-This package lists `react`, `react-dom`, and `pdfjs-dist` as peer dependencies. You must install them yourself. This package is tested with `pdfjs-dist@4.2.67`.
+This package lists `react`, `react-dom`, and `pdfjs-dist` as peer dependencies. You must install them yourself. Tested with `pdfjs-dist@4.2.67`.
+
+SSR/Node note: If you render PDFs server-side or need Node canvas features, install without --no-optional so canvas is included.
 
 **Usage**
 
