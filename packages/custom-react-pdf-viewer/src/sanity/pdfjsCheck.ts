@@ -11,7 +11,15 @@ export function assertPdfjsInstalled() {
     const msg =
       '[custom-react-pdf-viewer] Missing peer dependency "pdfjs-dist". ' +
       'Install it with: npm i pdfjs-dist@4.2.67 --no-optional';
-    if (process.env.NODE_ENV !== 'production') {
+    const isProd =
+      // Node / webpack define plugin cases
+      (typeof process !== 'undefined' && (process as any)?.env?.NODE_ENV === 'production') ||
+      // Vite/Rspack/etc. (import.meta.env.MODE or PROD)
+      (typeof import.meta !== 'undefined' &&
+        (import.meta as any)?.env &&
+        (((import.meta as any).env.PROD === true) ||
+         ((import.meta as any).env.MODE === 'production')));
+    if (!isProd) {
       // Be loud in dev
       // eslint-disable-next-line no-console
       console.error(msg);
