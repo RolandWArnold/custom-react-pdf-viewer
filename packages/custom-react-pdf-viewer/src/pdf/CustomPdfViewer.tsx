@@ -11,7 +11,7 @@ import styles from '../css/CustomPdfViewer.module.css';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
-interface CustomPdfViewerProps {
+export interface CustomPdfViewerProps {
   fileName?: string;
   file: Blob | null;
   highlightInfo?: { [key: number]: string } | null;
