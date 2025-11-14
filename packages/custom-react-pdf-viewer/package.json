@@ -1,9 +1,9 @@
 {
   "name": "custom-react-pdf-viewer",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A production-ready React wrapper around PDF.js with toolbar and find bar, licensed under Apache 2.0",
   "license": "Apache-2.0",
-  "main": "./dist/index.mjs",
+  "main": "./dist/node.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
@@ -28,8 +28,12 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "browser": {
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.ts"
+      },
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.mjs"
     },
     "./style.css": "./dist/index.css"
   },
