@@ -80,7 +80,10 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   useLayoutEffect(() => {
     const handleResize = () => {
       if (zoomRef.current && pdfManager?.isPdfLoaded) {
-        setCurrentScale(100);
+        // only refit if user hasn’t manually set a numeric zoom
+        if (pdfManager?.pdfViewer?.currentScaleValue === 'page-width') {
+          pdfManager.setCurrentScale(100);
+        }
         pdfManager?.resetZoom();
       }
     };
