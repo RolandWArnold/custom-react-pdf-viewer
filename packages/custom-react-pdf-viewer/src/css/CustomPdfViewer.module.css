@@ -1,4 +1,5 @@
 /* packages/custom-react-pdf-viewer/src/css/CustomPdfViewer.module.css */
+
 .container {
   position: relative;
   background: var(--custom-pdf-container-bg, #f2f2f2);
@@ -9,25 +10,58 @@
 .viewer {
   position: absolute;
   width: 100%;
-  top: 55px; /* This must match toolbar height */
+  top: 55px; /* Must match toolbar height */
   height: calc(var(--copilot-chat-pane-full-height, 100vh) - 55px);
   overflow: auto;
   background: var(--custom-pdf-viewer-bg, #f1f5f9);
   bottom: 0;
 }
 
+/* === Centered Loading Overlay === */
+.loadingOverlay {
+  position: absolute;
+  top: 55px; /* Start below toolbar */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 55px);
+  background-color: var(--custom-pdf-viewer-bg, #f1f5f9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  color: var(--custom-pdf-main-color, #181819);
+  font-family: sans-serif;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--custom-pdf-main-color, #555);
+  animation: custom-react-pdf-viewer-spin 1s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes custom-react-pdf-viewer-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Indeterminate Progress Bar (Optional, can be used for page rendering) === */
 .loader {
   width: 100%;
   height: 4px;
   background-color: #f0f0f0;
-  overflow: none;
+  overflow: hidden;
   position: relative;
+  z-index: 10;
 }
 
 .loaderBar {
   width: 100%;
   height: 100%;
-  background-color: orange;
+  background-color: var(--custom-pdf-loader-bar-color, lightblue);
   position: absolute;
   left: 0;
   top: 0;

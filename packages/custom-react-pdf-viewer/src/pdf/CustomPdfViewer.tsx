@@ -39,11 +39,12 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
       return;
     }
 
-    // Reveal the DOM immediately so the viewer can initialize
-    setInternalIsLoading(false);
-
+    // Create the Blob URL
     const blobUrl = URL.createObjectURL(file);
     setInternalBlobUrl(blobUrl);
+
+    // NOTE: We do NOT set internalIsLoading(false) here anymore.
+    // We wait for the PDF to actually load content.
 
     return () => {
       URL.revokeObjectURL(blobUrl);
@@ -53,6 +54,7 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
   // 2. Init Viewer
   useEffect(() => {
+    // The viewerRef will now always exist because we changed the JSX return below.
     if (!viewerRef.current || !internalBlobUrl) {
       return;
     }
@@ -64,11 +66,26 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
       initialPageNo = qPage;
     }
 
+    // Initialize the manager
     pdfManager.initViewer(viewerRef.current, EventBus, PDFLinkService, PDFFindController, PDFViewer, internalBlobUrl, initialPageNo);
 
-    // Sync the eventBus to state
+    // Sync the eventBus to state and setup loading listeners
     if (pdfManager.eventBus) {
         setEventBus(pdfManager.eventBus);
+
+        // Listen for the 'pagesloaded' event to turn off the loading bar
+        const onPagesLoaded = () => {
+          setInternalIsLoading(false);
+        };
+
+        pdfManager.eventBus.on('pagesloaded', onPagesLoaded);
+
+        // Cleanup listener on unmount/re-run
+        return () => {
+           pdfManager.eventBus?.off('pagesloaded', onPagesLoaded);
+           pdfManager.unmount();
+           setEventBus(null);
+        };
     }
 
     return () => {
@@ -93,13 +110,17 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
       {eventBus && <PdfFindBar eventBus={eventBus} />}
 
-      {internalIsLoading ? (
+      {/* Render Loader Overlay */}
+      {internalIsLoading && (
         <div className={styles.loader}>
           <div className={styles.loaderBar} />
         </div>
-      ) : (
-        <div className={`${styles.viewer} pdfViewer`} ref={viewerRef} />
       )}
+
+      {/* Always render the viewer div so the 'viewerRef' is populated
+        and accessible to the initViewer effect immediately.
+      */}
+      <div className={`${styles.viewer} pdfViewer`} ref={viewerRef} />
     </div>
   );
 };

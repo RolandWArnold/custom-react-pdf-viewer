@@ -11,6 +11,9 @@ const DOCUMENTS = [
   { id: 5, title: "Lorem Ipsum Test", fileName: "5-Lorem-ipsum.pdf" },
 ];
 
+// We must use the 'raw' domain to fetch the actual file content, not the GitHub UI
+const GITHUB_BASE_URL = "https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/main/apps/demo/public";
+
 export default function App() {
   const [selectedDocId, setSelectedDocId] = useState<number>(DOCUMENTS[0].id);
   const [fileBlob, setFileBlob] = useState<Blob | null>(null);
@@ -26,11 +29,11 @@ export default function App() {
       setFileBlob(null);
 
       try {
-        // Fetch the file from the public folder
-        const res = await fetch(`/${activeDoc.fileName}`);
+        // Fetch the file from the remote GitHub raw URL
+        const res = await fetch(`${GITHUB_BASE_URL}/${activeDoc.fileName}`);
 
         if (!res.ok) {
-          throw new Error(`Could not load ${activeDoc.fileName}`);
+          throw new Error(`Could not load ${activeDoc.fileName} - Status: ${res.status}`);
         }
 
         const blob = await res.blob();
@@ -41,7 +44,7 @@ export default function App() {
       } catch (err) {
         if (isMounted) {
           console.error(err);
-          setError("Failed to load document. Please check if the file exists in /public.");
+          setError("Failed to load document from GitHub. Please check internet connection or URL.");
         }
       }
     };
@@ -83,7 +86,7 @@ export default function App() {
           </div>
         )}
 
-        {!error && fileBlob && (
+        {!error && (
           <div className="viewer-wrapper">
             <CustomPdfViewer
               fileName={activeDoc.fileName}
