@@ -1,4 +1,3 @@
-// packages/custom-react-pdf-viewer/src/pdf/CustomPdfViewer.tsx
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -27,21 +26,20 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   const [pdfManager] = useState(() => new PdfManager());
   const viewerRef = useRef<HTMLDivElement>(null);
 
-  // FIX 1: Track eventBus in React state to force a render when it becomes available
+  // Track eventBus in state to ensure child components render when it's ready
   const [eventBus, setEventBus] = useState<any>(null);
 
   const [internalIsLoading, setInternalIsLoading] = useState(true);
   const [internalBlobUrl, setInternalBlobUrl] = useState<string | null>(null);
 
-  // 1. Manage Blob URL and Loading State
+  // 1. Manage Blob URL
   useEffect(() => {
     if (!file) {
       setInternalIsLoading(true);
       return;
     }
 
-    // FIX 2: Unlock the deadlock.
-    // We must reveal the DOM (set loading false) BEFORE we try to init the viewer.
+    // Reveal the DOM immediately so the viewer can initialize
     setInternalIsLoading(false);
 
     const blobUrl = URL.createObjectURL(file);
@@ -55,7 +53,6 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
   // 2. Init Viewer
   useEffect(() => {
-    // Now that internalIsLoading is false, viewerRef.current will exist.
     if (!viewerRef.current || !internalBlobUrl) {
       return;
     }
@@ -69,7 +66,7 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
     pdfManager.initViewer(viewerRef.current, EventBus, PDFLinkService, PDFFindController, PDFViewer, internalBlobUrl, initialPageNo);
 
-    // FIX 3: Sync the eventBus to state immediately after init
+    // Sync the eventBus to state
     if (pdfManager.eventBus) {
         setEventBus(pdfManager.eventBus);
     }
@@ -94,7 +91,6 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
     <div className={styles.container}>
       <PdfToolbar {...toolbarProps} />
 
-      {/* FIX 4: Use the state variable 'eventBus' to ensure reliable rendering */}
       {eventBus && <PdfFindBar eventBus={eventBus} />}
 
       {internalIsLoading ? (

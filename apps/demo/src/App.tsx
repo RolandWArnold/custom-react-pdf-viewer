@@ -14,7 +14,6 @@ const DOCUMENTS = [
 export default function App() {
   const [selectedDocId, setSelectedDocId] = useState<number>(DOCUMENTS[0].id);
   const [fileBlob, setFileBlob] = useState<Blob | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const activeDoc = DOCUMENTS.find((d) => d.id === selectedDocId) || DOCUMENTS[0];
@@ -23,7 +22,6 @@ export default function App() {
     let isMounted = true;
 
     const fetchDocument = async () => {
-      setIsLoading(true);
       setError(null);
       setFileBlob(null);
 
@@ -45,8 +43,6 @@ export default function App() {
           console.error(err);
           setError("Failed to load document. Please check if the file exists in /public.");
         }
-      } finally {
-        if (isMounted) setIsLoading(false);
       }
     };
 
@@ -81,20 +77,13 @@ export default function App() {
 
       {/* Main Content / Viewer Area (80%) */}
       <main className="main-content">
-        {isLoading && (
-          <div className="status-message">
-            <div className="spinner"></div>
-            <p>Loading {activeDoc.fileName}...</p>
-          </div>
-        )}
-
         {error && (
           <div className="status-message error">
             <p>⚠️ {error}</p>
           </div>
         )}
 
-        {!isLoading && !error && fileBlob && (
+        {!error && fileBlob && (
           <div className="viewer-wrapper">
             <CustomPdfViewer
               fileName={activeDoc.fileName}
