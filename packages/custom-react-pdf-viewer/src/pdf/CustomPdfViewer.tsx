@@ -20,23 +20,28 @@ export interface CustomPdfViewerProps {
 
 export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   fileName,
-  file, // Use the new prop
+  file,
   highlightInfo,
   jumpToPage,
 }) => {
   const [pdfManager] = useState(() => new PdfManager());
   const viewerRef = useRef<HTMLDivElement>(null);
 
+  // FIX 1: Track eventBus in React state to force a render when it becomes available
+  const [eventBus, setEventBus] = useState<any>(null);
+
   const [internalIsLoading, setInternalIsLoading] = useState(true);
   const [internalBlobUrl, setInternalBlobUrl] = useState<string | null>(null);
 
-  // This effect manages the blob URL lifecycle
+  // 1. Manage Blob URL and Loading State
   useEffect(() => {
     if (!file) {
       setInternalIsLoading(true);
       return;
     }
 
+    // FIX 2: Unlock the deadlock.
+    // We must reveal the DOM (set loading false) BEFORE we try to init the viewer.
     setInternalIsLoading(false);
 
     const blobUrl = URL.createObjectURL(file);
@@ -44,14 +49,14 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
     return () => {
       URL.revokeObjectURL(blobUrl);
-      setInternalBlobUrl(null); // Clear the URL
+      setInternalBlobUrl(null);
     };
-  }, [file]); // Re-run whenever the file prop changes
+  }, [file]);
 
-  // This effect initializes the PdfManager
+  // 2. Init Viewer
   useEffect(() => {
-    // Wait for the internalBlobUrl to be set
-    if (internalIsLoading || !viewerRef.current || !internalBlobUrl) {
+    // Now that internalIsLoading is false, viewerRef.current will exist.
+    if (!viewerRef.current || !internalBlobUrl) {
       return;
     }
 
@@ -64,14 +69,18 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
     pdfManager.initViewer(viewerRef.current, EventBus, PDFLinkService, PDFFindController, PDFViewer, internalBlobUrl, initialPageNo);
 
-    // Tell the manager the PDF is ready
-    setInternalIsLoading(false);
+    // FIX 3: Sync the eventBus to state immediately after init
+    if (pdfManager.eventBus) {
+        setEventBus(pdfManager.eventBus);
+    }
 
     return () => {
       pdfManager?.unmount();
+      setEventBus(null);
     };
-  }, [internalBlobUrl, pdfManager, internalIsLoading]); // Depend on internal state
+  }, [internalBlobUrl, pdfManager]);
 
+  // 3. Highlight info
   useEffect(() => {
     if (internalIsLoading || !viewerRef.current || !internalBlobUrl) {
       return;
@@ -84,9 +93,10 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   return (
     <div className={styles.container}>
       <PdfToolbar {...toolbarProps} />
-      {pdfManager.eventBus && <PdfFindBar eventBus={pdfManager.eventBus} />}
 
-      {/* Use internal loading state */}
+      {/* FIX 4: Use the state variable 'eventBus' to ensure reliable rendering */}
+      {eventBus && <PdfFindBar eventBus={eventBus} />}
+
       {internalIsLoading ? (
         <div className={styles.loader}>
           <div className={styles.loaderBar} />

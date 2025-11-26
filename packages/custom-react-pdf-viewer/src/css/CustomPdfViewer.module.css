@@ -2,7 +2,6 @@
 .container {
   position: relative;
   background: var(--custom-pdf-container-bg, #f2f2f2);
-  overflow: none;
   width: 100%;
   height: fit-content;
 }
@@ -14,6 +13,7 @@
   height: calc(var(--copilot-chat-pane-full-height, 100vh) - 55px);
   overflow: auto;
   background: var(--custom-pdf-viewer-bg, #f1f5f9);
+  bottom: 0;
 }
 
 .loader {

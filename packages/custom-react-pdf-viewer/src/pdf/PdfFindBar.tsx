@@ -11,13 +11,17 @@ const FindState = {
   WRAPPED: 2,
   PENDING: 3,
 };
-
 interface PdfFindBarProps {
   eventBus: InstanceType<typeof EventBus>;
 }
 
 export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => {
-  // === State for the Find Bar UI ===
+  // === DIAGNOSTIC LOG ===
+  // Verify the component is mounting and has an eventBus
+  useEffect(() => {
+    console.log('[PdfFindBar] Mounted. EventBus present:', !!eventBus);
+  }, [eventBus]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [highlightAll, setHighlightAll] = useState(false);
@@ -31,24 +35,20 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
   const findFieldRef = useRef<HTMLInputElement>(null);
   const prevIsOpenRef = useRef(isOpen);
 
-  // Generate unique IDs for this component instance
   const baseId = useId();
   const findHighlightAllId = `${baseId}-find-highlight-all`;
   const findMatchCaseId = `${baseId}-find-match-case`;
   const findMatchDiacriticsId = `${baseId}-find-match-diacritics`;
   const findEntireWordId = `${baseId}-find-entire-word`;
 
-  // Effect for global keydown listeners (Ctrl+F and Escape)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Check for Escape key
       if (e.key === 'Escape') {
         setIsOpen(false);
       }
-
-      // Check for Ctrl+F (Windows/Linux) or Cmd+F (Mac)
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-        e.preventDefault(); // Prevent browser's default find
+        e.preventDefault();
+        console.log('[PdfFindBar] Ctrl+F detected');
         setIsOpen(true);
       }
     };
@@ -59,12 +59,13 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
     };
   }, [eventBus, query, caseSensitive, entireWord, highlightAll, matchDiacritics]);
 
-  // Effect to subscribe to all PDF.js events
   useEffect(() => {
     // Listen for the toggle event from the toolbar
-    const toggleFindBar = () => setIsOpen(open => !open);
+    const toggleFindBar = () => {
+        console.log('[PdfFindBar] Received toggle event. Current state:', isOpen);
+        setIsOpen(open => !open);
+    };
 
-    // Listen for state updates from the find controller
     const handleUpdateState = (data: {
       state: number,
       previous: string,
@@ -93,79 +94,69 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
       }
     };
 
-    // Listen for match count updates
     const handleUpdateMatches = (data: { matchesCount: { current: number, total: number } }) => {
       setMatchesCount(data.matchesCount);
       setStatus(data.matchesCount.total === 0 ? 'notFound' : '');
     };
 
     // Subscribe
+    console.log('[PdfFindBar] Subscribing to events');
     eventBus.on('findbar-toggle', toggleFindBar);
     eventBus.on('updatefindcontrolstate', handleUpdateState);
     eventBus.on('updatefindmatchescount', handleUpdateMatches);
 
-    // Unsubscribe on unmount
     return () => {
+      console.log('[PdfFindBar] Unsubscribing');
       eventBus.off('findbar-toggle', toggleFindBar);
       eventBus.off('updatefindcontrolstate', handleUpdateState);
       eventBus.off('updatefindmatchescount', handleUpdateMatches);
     };
-  }, [eventBus]);
+  }, [eventBus]); // Removed isOpen from dependency to avoid re-subscribing
 
-  // Effect to handle *only* what happens when isOpen changes
   useEffect(() => {
-    // Check if it JUST opened (prev was false, current is true)
     if (isOpen && !prevIsOpenRef.current) {
+      console.log('[PdfFindBar] Opening... focusing input');
       findFieldRef.current?.select();
       findFieldRef.current?.focus();
     }
 
-    // Check if it JUST closed (prev was true, current is false)
     if (!isOpen && prevIsOpenRef.current) {
-      // Dispatch 'barclose' to clear state and all highlights
       eventBus.dispatch('find', {
         source: 'PdfFindBar',
         type: 'barclose',
       });
-      // Reset our local React state (but not the query)
       setFindMessage('');
       setMatchesCount({ current: 0, total: 0 });
       setStatus('');
     }
-
-    // Update the ref *after* the logic
     prevIsOpenRef.current = isOpen;
-  }, [isOpen, eventBus]); // <-- Minimal dependency array breaks the loop!
+  }, [isOpen, eventBus]);
 
-  // === Findbar Event Handlers ===
+  console.log('[PdfFindBar] isOpen:', isOpen);
 
+  // ... (Event Handlers: handleQueryChange, handleKeyDown, etc. remain the same)
+  // ... Keep the handlers exactly as they were in previous source
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
-
-    // Manually dispatch 'find' with the NEW query
     eventBus.dispatch('find', {
       source: 'PdfFindBar',
       type: 'find',
-      query: newQuery, // <-- Use newQuery, not the stale state
+      query: newQuery,
       caseSensitive: caseSensitive,
       entireWord: entireWord,
       highlightAll: highlightAll,
       findPrevious: false,
       matchDiacritics: matchDiacritics,
     });
-
-    // Reset UI state if query is cleared
     if (!newQuery) {
       setFindMessage('');
       setMatchesCount({ current: 0, total: 0 });
       setStatus('');
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      // Manually dispatch 'again'
       eventBus.dispatch('find', {
         source: 'PdfFindBar',
         type: 'again',
@@ -173,108 +164,45 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
         caseSensitive,
         entireWord,
         highlightAll,
-        findPrevious: e.shiftKey, // Use shiftKey
+        findPrevious: e.shiftKey,
         matchDiacritics,
       });
       e.preventDefault();
     }
-    // Escape key is handled by the global listener
   };
-
-  // Handlers for checkboxes
   const onHighlightAll = () => {
     setHighlightAll(h => {
       const next = !h;
-      eventBus.dispatch('find', {
-        source: 'PdfFindBar',
-        type: 'highlightallchange',
-        query,
-        caseSensitive,
-        entireWord,
-        highlightAll: next,
-        findPrevious: false,
-        matchDiacritics,
-      });
+      eventBus.dispatch('find', { source: 'PdfFindBar', type: 'highlightallchange', query, caseSensitive, entireWord, highlightAll: next, findPrevious: false, matchDiacritics });
       return next;
     });
   };
-
   const onCaseSensitive = () => {
     setCaseSensitive(c => {
       const next = !c;
-      eventBus.dispatch('find', {
-        source: 'PdfFindBar',
-        type: 'casesensitivitychange',
-        query,
-        caseSensitive: next,
-        entireWord,
-        highlightAll,
-        findPrevious: false,
-        matchDiacritics,
-      });
+      eventBus.dispatch('find', { source: 'PdfFindBar', type: 'casesensitivitychange', query, caseSensitive: next, entireWord, highlightAll, findPrevious: false, matchDiacritics });
       return next;
     });
   };
-
   const onMatchDiacritics = () => {
     setMatchDiacritics(m => {
       const next = !m;
-      eventBus.dispatch('find', {
-        source: 'PdfFindBar',
-        type: 'diacriticmatchingchange',
-        query,
-        caseSensitive,
-        entireWord,
-        highlightAll,
-        findPrevious: false,
-        matchDiacritics: next,
-      });
+      eventBus.dispatch('find', { source: 'PdfFindBar', type: 'diacriticmatchingchange', query, caseSensitive, entireWord, highlightAll, findPrevious: false, matchDiacritics: next });
       return next;
     });
   };
-
   const onEntireWord = () => {
     setEntireWord(w => {
       const next = !w;
-      eventBus.dispatch('find', {
-        source: 'PdfFindBar',
-        type: 'entirewordchange',
-        query,
-        caseSensitive,
-        entireWord: next,
-        highlightAll,
-        findPrevious: false,
-        matchDiacritics,
-      });
+      eventBus.dispatch('find', { source: 'PdfFindBar', type: 'entirewordchange', query, caseSensitive, entireWord: next, highlightAll, findPrevious: false, matchDiacritics });
       return next;
     });
   };
-
-  // Handlers for next/prev buttons
   const onFindPrevious = () => {
-    eventBus.dispatch('find', {
-      source: 'PdfFindBar',
-      type: 'again',
-      query,
-      caseSensitive,
-      entireWord,
-      highlightAll,
-      findPrevious: true,
-      matchDiacritics,
-    });
+    eventBus.dispatch('find', { source: 'PdfFindBar', type: 'again', query, caseSensitive, entireWord, highlightAll, findPrevious: true, matchDiacritics });
   };
-
   const onFindNext = () => {
-    eventBus.dispatch('find', {
-      source: 'PdfFindBar',
-      type: 'again',
-      query,
-      caseSensitive,
-      entireWord,
-      highlightAll,
-      findPrevious: false,
-      matchDiacritics,
-    });
+    eventBus.dispatch('find', { source: 'PdfFindBar', type: 'again', query, caseSensitive, entireWord, highlightAll, findPrevious: false, matchDiacritics });
   };
 
   // === Render Logic ===
@@ -287,12 +215,15 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
     }
   }
 
-  // Combine find message and match count
   const message = findMessage ? findMessage : matchesCountText;
 
+  // === DIAGNOSTIC LOG ===
   if (!isOpen) {
+    console.log('[PdfFindBar] isOpen is false, returning null'); // Optional: noisy log
     return null;
   }
+
+  console.log('[PdfFindBar] Rendering UI'); // Confirm we are actually trying to render pixels
 
   return (
     <div
@@ -313,79 +244,27 @@ export const PdfFindBar: FunctionComponent<PdfFindBarProps> = ({ eventBus }) => 
           />
         </span>
         <div className={styles.splitToolbarButton}>
-          <button
-            className={styles.toolbarButton}
-            title="Find the previous occurrence of the phrase"
-            onClick={onFindPrevious}
-          >
+          <button className={styles.toolbarButton} title="Find the previous occurrence of the phrase" onClick={onFindPrevious}>
             <span>Previous</span>
           </button>
           <div className={styles.splitToolbarButtonSeparator}></div>
-          <button
-            className={styles.toolbarButton}
-            title="Find the next occurrence of the phrase"
-            onClick={onFindNext}
-          >
+          <button className={styles.toolbarButton} title="Find the next occurrence of the phrase" onClick={onFindNext}>
             <span>Next</span>
           </button>
         </div>
       </div>
 
       <div className={styles.findbarOptionsOneContainer}>
-        <input
-          type="checkbox"
-          id={findHighlightAllId}
-          className={styles.toolbarField}
-          checked={highlightAll}
-          onChange={onHighlightAll}
-        />
-        <label
-          htmlFor={findHighlightAllId}
-          className={styles.toolbarLabel}
-        >
-          Highlight All
-        </label>
-        <input
-          type="checkbox"
-          id={findMatchCaseId}
-          className={styles.toolbarField}
-          checked={caseSensitive}
-          onChange={onCaseSensitive}
-        />
-        <label
-          htmlFor={findMatchCaseId}
-          className={styles.toolbarLabel}
-        >
-          Match Case
-        </label>
+        <input type="checkbox" id={findHighlightAllId} className={styles.toolbarField} checked={highlightAll} onChange={onHighlightAll} />
+        <label htmlFor={findHighlightAllId} className={styles.toolbarLabel}>Highlight All</label>
+        <input type="checkbox" id={findMatchCaseId} className={styles.toolbarField} checked={caseSensitive} onChange={onCaseSensitive} />
+        <label htmlFor={findMatchCaseId} className={styles.toolbarLabel}>Match Case</label>
       </div>
       <div className={styles.findbarOptionsTwoContainer}>
-        <input
-          type="checkbox"
-          id={findMatchDiacriticsId}
-          className={styles.toolbarField}
-          checked={matchDiacritics}
-          onChange={onMatchDiacritics}
-        />
-        <label
-          htmlFor={findMatchDiacriticsId}
-          className={styles.toolbarLabel}
-        >
-          Match Diacritics
-        </label>
-        <input
-          type="checkbox"
-          id={findEntireWordId}
-          className={styles.toolbarField}
-          checked={entireWord}
-          onChange={onEntireWord}
-        />
-        <label
-          htmlFor={findEntireWordId}
-          className={styles.toolbarLabel}
-        >
-          Whole Words
-        </label>
+        <input type="checkbox" id={findMatchDiacriticsId} className={styles.toolbarField} checked={matchDiacritics} onChange={onMatchDiacritics} />
+        <label htmlFor={findMatchDiacriticsId} className={styles.toolbarLabel}>Match Diacritics</label>
+        <input type="checkbox" id={findEntireWordId} className={styles.toolbarField} checked={entireWord} onChange={onEntireWord} />
+        <label htmlFor={findEntireWordId} className={styles.toolbarLabel}>Whole Words</label>
       </div>
 
       <div className={styles.findbarMessageContainer}>
