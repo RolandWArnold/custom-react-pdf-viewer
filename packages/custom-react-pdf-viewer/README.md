@@ -30,9 +30,9 @@ pnpm add custom-react-pdf-viewer
 yarn add custom-react-pdf-viewer
 ```
 
-This package lists `react`, `react-dom`, and `pdfjs-dist` as peer dependencies. You must install them yourself. Tested with `pdfjs-dist@4.2.67`.
+This package lists `react` and `react-dom` as peer dependencies. You must install them yourself.
 
-SSR/Node note: If you render PDFs server-side or need Node canvas features, install without --no-optional so canvas is included.
+**Note:** pdfjs-dist is installed automatically. If you see build warnings about canvas (optional for Node), you can silence them by adding --omit=optional to your install command.
 
 **Usage**
 
