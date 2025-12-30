@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { CustomPdfViewer, createLocalStorageAdapter } from "custom-react-pdf-viewer";
+import { useEffect, useState } from "react";
+import { CustomPdfViewer } from "custom-react-pdf-viewer";
 import "./App.css";
 
 const DOCUMENTS = [
@@ -86,6 +86,8 @@ export default function App() {
             <CustomPdfViewer
               fileName={activeDoc.fileName}
               file={fileBlob}
+              viewerId={`pdf-viewer-${activeDoc.id}`}
+              sessionKey={activeDoc.fileName}
             />
           </div>
         )}

@@ -1,9 +1,8 @@
 // packages/custom-react-pdf-viewer/src/pdf/PdfToolbar.tsx
-import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import type { FunctionComponent } from 'react';
 import type { ToolbarProps } from './ToolbarInterface';
 import { RotateLeftIcon, RotateRightIcon } from './Icons';
-// 1. Import the RENAMED CSS module
 import styles from '../css/PdfToolbar.module.css';
 
 const ZOOM_OPTIONS = [
@@ -27,6 +26,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   fileName,
   pdfManager,
   jumpToPage,
+  features
 }) => {
   const [numPages, setNumPages] = useState(1);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -93,27 +93,6 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
     }
   }, [jumpToPage, pdfManager]);
 
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      if (zoomRef.current && pdfManager?.isPdfLoaded) {
-        // only refit if user hasn’t manually set a numeric zoom
-        if (pdfManager?.pdfViewer?.currentScaleValue === 'page-width') {
-          pdfManager.setScale(100);
-        }
-        pdfManager?.resetZoom();
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isToolbarRendered, pdfManager]);
-
-  // 3. The useEffect to create PDFFindBar is REMOVED
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
@@ -163,16 +142,16 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
     renderOptions.push({ value: scaleValue, label: `${scaleValue}%` });
     // Sort numbers so it looks nice? Optional.
     renderOptions.sort((a, b) => {
-       if (typeof a.value === 'string') return -1;
-       if (typeof b.value === 'string') return 1;
-       return (a.value as number) - (b.value as number);
+      if (typeof a.value === 'string') return -1;
+      if (typeof b.value === 'string') return 1;
+      return (a.value as number) - (b.value as number);
     });
   }
 
   const handleRotateCw = () => pdfManager?.rotateClockwise();
   const handleRotateCcw = () => pdfManager?.rotateCounterClockwise();
 
-return (
+  return (
     <div className={styles.toolbarContainer} ref={toolbarRefInDom}>
       <div className={styles.toolbarMain}>
         <div className={styles.toolbarFileInfo}>
@@ -180,74 +159,82 @@ return (
             {showFileName ? fileName : ''}
           </span>
         </div>
-
         {numPages > 0 && (
           <>
-            <div className={styles.toolbarControl}>
-              <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage} title="Previous Page">
-                Prev
-              </button>
-              <input
-                value={currentPageNumber <= 0 ? '' : `${currentPageNumber}`}
-                type="number"
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-              />
-              <span>/ {numPages}</span>
-              <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage} title="Next Page">
-                Next
-              </button>
-            </div>
+            {/* Pagination */}
+            {features.pagination && (
+              <div className={styles.toolbarControl}>
+                <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage} title="Previous Page">
+                  Prev
+                </button>
+                <input
+                  value={currentPageNumber <= 0 ? '' : `${currentPageNumber}`}
+                  type="number"
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                />
+                <span>/ {numPages}</span>
+                <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage} title="Next Page">
+                  Next
+                </button>
+              </div>
+            )}
 
-            <div className={styles.toolbarZoomControl}>
-              <button onClick={handleZoomOut} disabled={!canZoomOut} title="Zoom Out">
-                -
-              </button>
+            {/* Zoom */}
+            {features.zoom && (
+              <div className={styles.toolbarZoomControl}>
+                <button onClick={handleZoomOut} disabled={!canZoomOut} title="Zoom Out">
+                  -
+                </button>
 
-              <select
-                className={styles.zoomSelect}
-                value={scaleValue}
-                onChange={onScaleChange}
-                aria-label="Zoom"
-              >
-                {renderOptions.map((opt, idx) => (
-                  <option
-                    key={`${opt.value}-${idx}`}
-                    value={opt.value}
-                    disabled={opt.disabled}
-                  >
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                <select
+                  className={styles.zoomSelect}
+                  value={scaleValue}
+                  onChange={onScaleChange}
+                  aria-label="Zoom"
+                >
+                  {renderOptions.map((opt, idx) => (
+                    <option
+                      key={`${opt.value}-${idx}`}
+                      value={opt.value}
+                      disabled={opt.disabled}
+                    >
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
 
-              <button onClick={handleZoomIn} disabled={!canZoomIn} title="Zoom In">
-                +
-              </button>
-            </div>
+                <button onClick={handleZoomIn} disabled={!canZoomIn} title="Zoom In">
+                  +
+                </button>
+              </div>
+            )}
 
-            <div className={styles.toolbarRight}>
-              {/* <button onClick={handleRotateCcw} title="Rotate Counter-Clockwise">
-                <RotateLeftIcon />
-              </button>
-              <button onClick={handleRotateCw} title="Rotate Clockwise">
-                <RotateRightIcon />
-              </button> */}
+            {/* Find Toggle */}
+            {features.find && (
+              <div className={styles.toolbarRight}>
+                {features.rotation && (
+                  <div className={styles.toolbarRight}>
+                    <button onClick={handleRotateCcw}><RotateLeftIcon /></button>
+                    <button onClick={handleRotateCw}><RotateRightIcon /></button>
+                  </div>
+                )}
 
-              {/* Divider */}
-              <div style={{ width: 1, height: 20, background: '#ccc', margin: '0 5px' }} />
+                {/* Divider */}
+                <div style={{ width: 1, height: 20, background: '#ccc', margin: '0 5px' }} />
 
-              <button
-                onClick={handleToggleFindBar}
-                className={styles.toolbarFindToggle}
-                title="Find in Document"
-              >
-                <span>Find</span>
-              </button>
-            </div>
+                <button
+                  onClick={handleToggleFindBar}
+                  className={styles.toolbarFindToggle}
+                  title="Find in Document"
+                >
+                  <span>Find</span>
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
-     </div>
-   );
- };
+    </div>
+  );
+}

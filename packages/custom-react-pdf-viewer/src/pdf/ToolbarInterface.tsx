@@ -6,4 +6,10 @@ export interface ToolbarProps {
   pdfManager?: PdfManager;
   isFileLoading?: boolean;
   jumpToPage?: number | null;
+  features: {
+      zoom: boolean;
+      rotation: boolean;
+      pagination: boolean;
+      find: boolean;
+  };
 }

@@ -9,5 +9,12 @@ export { createLocalStorageAdapter } from './adapters/createLocalStorageAdapter'
 // Export the Context Adapter Helper
 export { createContextAdapter } from './adapters/createContextAdapter';
 
-// TODO: update serialization/deserialization of PDF state. Fix at very least the drop-down for the scaling. Ideally have proper scaling options to match PDF.js.
-// Fix the precise location of the scrolling/etc. when restoring state.
+// Export the Store Provider and Hook
+export { PdfStoreProvider, usePdfStore } from './store/PdfStore';
+
+// Export Types
+export type {
+  PdfPersistenceStore,
+  PdfViewState,
+  PdfViewerFeature
+} from './types/PdfState';

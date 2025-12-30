@@ -1,6 +1,7 @@
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';
+import type { PdfViewState, PdfScrollAnchor } from '../types/PdfState';
 
 type EventBus = typeof EventBus;
 type PDFLinkService = typeof PDFLinkService;
@@ -421,6 +422,96 @@ class PdfManager {
     } else {
       // Handle numeric percentage: 150 -> 1.5
       this.data.pdfViewer.currentScale = value / 100;
+    }
+  };
+
+  public getCurrentViewState = (sessionKey?: string): PdfViewState | null => {
+    if (!this.pdfViewer || !this.data) return null;
+
+    const viewer = this.pdfViewer;
+
+    // 1. Calculate Scroll Anchor
+    let anchor: PdfScrollAnchor | undefined;
+    const container = this.data.viewerElement as HTMLElement;
+
+    if (container) {
+       // Find the most visible page or the page at the top
+       const views = viewer._pages || [];
+       const containerTop = container.scrollTop;
+
+       // Simple approach: Iterate views to find the one intersecting the top of the container
+       for (let i = 0; i < views.length; i++) {
+         const view = views[i];
+         const el = view.div;
+         if (!el) continue;
+
+         // Get element position relative to container
+         const elTop = el.offsetTop;
+         const elHeight = el.clientHeight;
+
+         // Check if this page covers the "scroll top" line
+         if (elTop <= containerTop + 5 && elTop + elHeight > containerTop) {
+            // Found the top-most visible page
+            const offset = containerTop - elTop;
+            const ratioY = offset / elHeight;
+
+            anchor = {
+              pageIndex: i, // 0-based
+              ratioY: Math.max(0, Math.min(1, ratioY)) // Clamp 0-1
+            };
+            break;
+         }
+       }
+    }
+
+    // Fallback if we couldn't calculate anchor (e.g. at very top)
+    if (!anchor) {
+        anchor = { pageIndex: this.pdfViewer.currentPageNumber - 1, ratioY: 0 };
+    }
+
+    return {
+      version: 1,
+      pageNumber: viewer.currentPageNumber,
+      scale: viewer.currentScaleValue || viewer.currentScale,
+      rotation: viewer.pagesRotation,
+      scrollAnchor: anchor,
+      sessionKey,
+      updatedAt: Date.now()
+    };
+  }
+
+  public restoreViewState = (state: PdfViewState) => {
+    if (!this.pdfViewer || !this.data) return;
+
+    // 1. Restore View Options (Rotation/Scale handled largely by init config, but safety check)
+    if (state.rotation !== undefined && this.pdfViewer.pagesRotation !== state.rotation) {
+        this.pdfViewer.pagesRotation = state.rotation;
+    }
+
+    // Scale is tricky because "auto" depends on resize.
+    // Usually handled by initViewer config, but if called late:
+    if (state.scale && this.pdfViewer.currentScaleValue !== state.scale.toString()) {
+        this.pdfViewer.currentScaleValue = state.scale.toString();
+    }
+
+    // 2. Restore Scroll Position
+    if (state.scrollAnchor) {
+      const { pageIndex, ratioY } = state.scrollAnchor;
+      const view = this.pdfViewer.getPageView(pageIndex);
+
+      if (view && view.div) {
+        const el = view.div;
+        const targetTop = el.offsetTop + (el.clientHeight * ratioY);
+
+        if (this.data.viewerElement) {
+            this.data.viewerElement.scrollTop = targetTop;
+        }
+      } else {
+        // Fallback if DOM not ready (shouldn't happen if called at right time)
+        this.pdfViewer.currentPageNumber = pageIndex + 1;
+      }
+    } else if (state.pageNumber) {
+        this.pdfViewer.currentPageNumber = state.pageNumber;
     }
   };
 }
