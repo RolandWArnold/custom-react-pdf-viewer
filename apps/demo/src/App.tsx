@@ -19,15 +19,6 @@ export default function App() {
 
   const activeDoc = DOCUMENTS.find((d) => d.id === selectedDocId) || DOCUMENTS[0];
 
-  // === The "Currying" Pattern ===
-  // This is disabled for now until the persistence logic is fully implemented and tested.
-  // We use the helper to create an adapter specific to this document.
-  // When activeDoc changes, we get a NEW adapter that writes to a NEW key.
-  // const stateAdapter = useMemo(() => {
-  //   // We can just use the filename, or combine it with a view ID if needed.
-  //   return createLocalStorageAdapter(activeDoc.fileName);
-  // }, [activeDoc.fileName]);
-
   useEffect(() => {
     let isMounted = true;
     const fetchDocument = async () => {

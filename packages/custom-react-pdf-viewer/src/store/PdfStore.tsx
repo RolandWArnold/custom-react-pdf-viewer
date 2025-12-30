@@ -2,7 +2,24 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import type { PdfPersistenceStore, PdfViewState } from '../types/PdfState';
 
-// --- Default Implementation (LocalStorage) ---
+// === 1. In-Memory Store (The New Default) ===
+export class InMemoryStore implements PdfPersistenceStore {
+  private storage = new Map<string, PdfViewState>();
+
+  get(viewerId: string): PdfViewState | null {
+    return this.storage.get(viewerId) || null;
+  }
+
+  set(viewerId: string, state: PdfViewState): void {
+    this.storage.set(viewerId, state);
+  }
+
+  remove(viewerId: string): void {
+    this.storage.delete(viewerId);
+  }
+}
+
+// === 2. LocalStorage Store (The Opt-In) ===
 export class LocalStorageStore implements PdfPersistenceStore {
   private prefix: string;
 
@@ -36,15 +53,15 @@ export class LocalStorageStore implements PdfPersistenceStore {
   }
 }
 
-// --- Context & Provider ---
+// === 3. Provider ===
 const PdfStoreContext = createContext<PdfPersistenceStore | null>(null);
 
 export const PdfStoreProvider: React.FC<{
   store?: PdfPersistenceStore;
   children: React.ReactNode
 }> = ({ store, children }) => {
-  // Default to LocalStorage if no store provided
-  const activeStore = useMemo(() => store || new LocalStorageStore(), [store]);
+  // Default is InMemoryStore
+  const activeStore = useMemo(() => store || new InMemoryStore(), [store]);
 
   return (
     <PdfStoreContext.Provider value={activeStore}>

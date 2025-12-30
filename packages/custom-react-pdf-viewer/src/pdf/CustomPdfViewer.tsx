@@ -136,7 +136,7 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
       pdfManager?.unmount();
       setEventBus(null);
     };
-  }, [internalBlobUrl, pdfManager]); // Removed stateAdapter/getInitialConfig from deep deps to avoid remount loops
+  }, [internalBlobUrl, pdfManager]); // Removed getInitialConfig from deep deps to avoid remount loops
 
   // 7. Imperative Updates (Highlight, Jump)
   useEffect(() => {

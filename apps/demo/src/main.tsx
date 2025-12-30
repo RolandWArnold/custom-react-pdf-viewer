@@ -8,7 +8,6 @@ import 'custom-react-pdf-viewer/style.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* Wrap App to enable persistence */}
     <PdfStoreProvider>
       <App />
     </PdfStoreProvider>
