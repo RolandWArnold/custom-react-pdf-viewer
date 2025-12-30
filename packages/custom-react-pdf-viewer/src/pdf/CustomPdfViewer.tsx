@@ -75,7 +75,7 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
     activeStore,
     viewerId,
     sessionKey,
-    file,
+    // file, // The actual file object/blob, unused for now, in future use to make sessionKey optional
     persistenceEnabled
   );
 

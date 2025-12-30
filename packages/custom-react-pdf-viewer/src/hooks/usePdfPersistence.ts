@@ -1,15 +1,15 @@
 // packages/custom-react-pdf-viewer/src/hooks/usePdfPersistence.ts
 import { useEffect, useRef, useCallback } from 'react';
 import type PdfManager from '../pdf/PdfManager';
-import type { PdfPersistenceStore, PdfViewState } from '../types/PdfState';
-import { debounce } from '../utils/debounce'; // You'll need a simple debounce util
+import type { PdfPersistenceStore } from '../types/PdfState';
+import { debounce } from '../utils/debounce';
 
 export function usePdfPersistence(
   manager: PdfManager,
   store: PdfPersistenceStore | null | undefined,
   viewerId: string | undefined,
   sessionKey: string | undefined,
-  fileRef: any, // The actual file object/blob
+  // fileRef: any, // The actual file object/blob, unused for now, in future use to make sessionKey optional
   isEnabled: boolean
 ) {
   const isRestored = useRef(false);
