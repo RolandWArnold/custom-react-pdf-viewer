@@ -51,7 +51,8 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   const features = useMemo(() => ({
     toolbar: !disabledFeatures.includes('toolbar'),
     find: !disabledFeatures.includes('find'),
-    rotation: !disabledFeatures.includes('rotation'),
+    // rotation: !disabledFeatures.includes('rotation'),
+    rotation: false, // Disabled by default for this release (UI needs polish)
     zoom: !disabledFeatures.includes('zoom'),
     pagination: !disabledFeatures.includes('pagination'),
   }), [disabledFeatures]);
