@@ -110,14 +110,3 @@ export function usePdfPersistence(
 
   return { getInitialConfig };
 }
-
-// Simple debounce helper if you don't have lodash
-function debounce(func: Function, wait: number) {
-  let timeout: any;
-  const debounced = (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-  debounced.clear = () => clearTimeout(timeout);
-  return debounced;
-}

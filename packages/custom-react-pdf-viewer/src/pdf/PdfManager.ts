@@ -2,6 +2,7 @@ import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } f
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';
 import type { PdfViewState, PdfScrollAnchor } from '../types/PdfState';
+import { debounce } from '../utils/debounce';
 
 type EventBus = typeof EventBus;
 type PDFLinkService = typeof PDFLinkService;
@@ -54,7 +55,6 @@ interface CharTrackInfo {
 
 class PdfManager {
   private data: PdfData | undefined;
-  private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   public constructor() {}
 
@@ -131,9 +131,9 @@ class PdfManager {
     this.cancelInit && clearTimeout(this.cancelInit);
     this.eventBus?.off('textlayerrendered', this.onTextLayerRendered);
     window.removeEventListener('resize', this.handleResize);
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
+    // @ts-ignore - The debounce utility adds .clear() but TS might not infer it on the class property automatically without complex typing
+    this.handleResize.clear?.();
+
     this.eventBus?.off('pagesdestroy', this.onPagesDestroy);
 
     this.data?.loadingTask?.destroy();
@@ -187,16 +187,11 @@ class PdfManager {
   get cancelInit() { return this.data?.cancelInit; }
   get isPdfLoaded() { return !!this.data; }
 
-  handleResize = () => {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
+  handleResize = debounce(() => {
+    if (this.pdfViewer && (this.pdfViewer.currentScaleValue === 'page-width' || this.pdfViewer.currentScaleValue === 'auto')) {
+      this.pdfViewer.currentScaleValue = 'page-width';
     }
-    this.resizeTimeout = setTimeout(() => {
-      if (this.pdfViewer && (this.pdfViewer.currentScaleValue === 'page-width' || this.pdfViewer.currentScaleValue === 'auto')) {
-        this.pdfViewer.currentScaleValue = 'page-width';
-      }
-    }, RESIZE_DEBOUNCE_TIME_MS);
-  };
+  }, RESIZE_DEBOUNCE_TIME_MS);
 
   // @ts-ignore
   onPageRendered = ({ source, pageNumber }: { source: PDFPageView; pageNumber: number }) => {

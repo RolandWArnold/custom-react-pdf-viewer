@@ -36,7 +36,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   const [currentScale, setScale] = useState(100);
   const [canZoomOut, setCanZoomOut] = useState(true);
   const [canZoomIn, setCanZoomIn] = useState(true);
-  const [isToolbarRendered, setIsToolbarRendered] = useState<boolean>(false);
+  const [ , setIsToolbarRendered] = useState<boolean>(false);
   const zoomRef = useRef<HTMLDivElement | null>(null);
 
   const [inputValue, setInputValue] = useState(`${currentPageNumber}`);
