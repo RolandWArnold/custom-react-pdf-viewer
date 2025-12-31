@@ -3,115 +3,152 @@
 [![npm version](https://img.shields.io/npm/v/custom-react-pdf-viewer.svg)](https://www.npmjs.com/package/custom-react-pdf-viewer)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A production-ready React wrapper around PDF.js with toolbar and find bar, licensed under Apache 2.0.
+A production-ready React wrapper around Mozilla's `pdf.js` that provides a "drop-in" PDF viewer with a fully-featured toolbar, find bar, and **automatic state persistence**.
 
-This package provides a `CustomPdfViewer` component that handles rendering, page navigation, zoom, and text search, with sane defaults and CSS custom properties for easy styling.
+![custom-react-pdf-viewer demo](https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/refs/heads/main/assets/screenshot-2.png)
 
 ## Features
 
-* **Full Toolbar:** Page navigation, page number input, and zoom controls.
-* **Find Bar:** `Ctrl+F` support, "Highlight All," "Match Case," and other standard find controls.
-* **Simple API:** Just pass a `File` or `Blob` object to the component.
-* **Custom Styling:** Use CSS custom properties to override default styles.
-* **TypeScript:** Written in TypeScript with types included.
-
-## Screenshot
-
-![custom-react-pdf-viewer demo](https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/refs/heads/main/assets/screenshot-2.png)
+- **Batteries Included:** Full toolbar, page navigation, zoom, and rotation out of the box.
+- **State Persistence:** Automatically saves and restores scroll position (precise ratio), zoom level, and rotation for each document.
+- **Find Bar:** `Ctrl+F` / `Cmd+F` support with highlighting, match case, and whole word options.
+- **Feature Flags:** Easily opt-out of specific features (e.g., disable rotation or the toolbar) via props.
+- **Simple API:** Just pass a `File`, `Blob`, or URL string.
+- **TypeScript:** First-class type definitions included.
 
 ## Installation
 
 ```bash
-# Browser apps
+# npm
 npm install custom-react-pdf-viewer
-# or
+
+# pnpm
 pnpm add custom-react-pdf-viewer
-# or
+
+# yarn
 yarn add custom-react-pdf-viewer
 ```
 
-This package lists `react` and `react-dom` as peer dependencies. You must install them yourself.
+> **Note:** This package requires `react` and `react-dom` (>=18) as peer dependencies.
 
-**Note:** pdfjs-dist is installed automatically. If you see build warnings about canvas (optional for Node), you can silence them by adding --omit=optional to your install command.
+## Usage
 
-**Usage**
+### Level 1: The Simplest Use-Case
 
-You must import the component.
+If you just want to render a PDF without worrying about state or persistence, simply import the component and pass it a file.
 
-```typescript
-// src/App.tsx
-import { useEffect, useState } from "react";
+**Note*:** The viewer is designed to fill `100%` of the width and height of its parent container. Ensure the parent element has a defined height (e.g., `100vh`, `500px`, or `flex: 1`).
+
+```ts
 import { CustomPdfViewer } from "custom-react-pdf-viewer";
+import "custom-react-pdf-viewer/style.css"; // Don't forget the styles!
 
-export default function App() {
-  // We just need to store the blob itself, or null
-  const [file, setFile] = useState<Blob | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      // Fetch and get the blob
-      const res = await fetch("/sample.pdf");
-      const blob = await res.blob();
-      setFile(blob);
-    })();
-  }, []);
-
+function SimpleViewer({ fileBlob }) {
   return (
-    <div style={{ height: "100vh", width: "100vw" }}>
+    <div style={{ height: "100vh" }}>
       <CustomPdfViewer
-        fileName="sample.pdf"
-        file={file}
+        file={fileBlob}
+        fileName="my-document.pdf"
       />
     </div>
   );
 }
 ```
 
-## Component Props
+### Level 2: Enabling State Persistence
 
-| Prop | Type | Description |
-| :--- | :--- | :--- |
-| **`file`** | `Blob \| null` | **Required.** The `File` or `Blob` object of the PDF. The component will handle creating and revoking the blob URL. |
-| `fileName` | `string` | Optional. The name to display in the toolbar. |
-| `isLoading` | `boolean` | Optional. Set to `true` to display the loading bar. Set to `false` when the `blobUrl` is ready. |
+To automatically remember zoom levels and scroll positions when users switch between documents, you need two things:
 
-## Styling
+1. Wrap your app with the `<PdfStoreProvider>`.
+2. Give your viewer a unique `viewerId`.
 
-You can override the default colors and styles by setting these CSS custom properties in your own stylesheet:
+#### Step A: Add the Provider
 
-```css
-/* Example styling overrides */
-:root {
-  /* Toolbar */
-  --custom-pdf-toolbar-bg: #f9f9fa;
-  --custom-pdf-toolbar-border-color: #b8b8b8;
-  --custom-pdf-main-color: #181819;
+```ts
+// src/main.tsx
+import { PdfStoreProvider } from "custom-react-pdf-viewer";
 
-  /* Find Bar */
-  --custom-pdf-findbar-bg: #f9f9fa;
-  --custom-pdf-findbar-border-color: #b8b8b8;
-  --custom-pdf-loader-bar-color: lightblue;
+<PdfStoreProvider>
+  <App />
+</PdfStoreProvider>
+```
 
-  /* Buttons */
-  --custom-pdf-button-hover-color: #ddd;
-  --custom-pdf-toggled-btn-bg: #00000033;
-  --custom-pdf-toggled-btn-color: #000;
+#### Step B: Use the Viewer with an ID
 
-  /* Form Fields */
-  --custom-pdf-field-border-color: #bbb;
-  --custom-pdf-field-bg-color: white;
-  --custom-pdf-field-color: #060606;
+```ts
+// src/App.tsx
+import { CustomPdfViewer } from "custom-react-pdf-viewer";
 
-  /* Viewer */
-  --custom-pdf-container-bg: #f2f2f2;
-  --custom-pdf-viewer-bg: #f1f5f9;
+function App() {
+  // ... file loading logic ...
+
+  return (
+    <CustomPdfViewer
+      file={file}
+      fileName="sample.pdf"
+      // 1. Required: Unique ID for this UI slot (e.g. "main-viewer", "sidebar")
+      viewerId="main-pdf-viewer"
+      // 2. Recommended: Unique ID for the document content
+      sessionKey="doc-123"
+    />
+  );
 }
 ```
 
----
+**Result:** If a user zooms to 150%, switches to another document, and returns to `"doc-123"`, the viewer will automatically restore the zoom level and exact scroll position.
 
-## 📜 License
+### Level 3: Persisting Across Reloads (LocalStorage)
 
-This project is licensed under the Apache License, Version 2.0.
+By default, the `PdfStoreProvider` uses in-memory storage, meaning state is lost on refresh.
 
----
+To persist state across browser restarts, pass `LocalStorageStore` to the provider.
+
+```ts
+import { PdfStoreProvider, LocalStorageStore } from "custom-react-pdf-viewer";
+
+<PdfStoreProvider store={new LocalStorageStore()}>
+  <App />
+</PdfStoreProvider>
+```
+
+The component usage (`viewerId`, `sessionKey`) remains exactly the same as in Level 2.
+
+## Component Props
+
+| Prop               | Type                               | Description |
+|--------------------|------------------------------------|-------------|
+| `file`             | `Blob \| File \| string \| null` | **Required.** The source of the PDF. |
+| `fileName`         | `string`                           | Optional. The name to display in the toolbar. |
+| `viewerId`         | `string`                           | **Required for persistence.** Unique identifier for this viewer instance. |
+| `sessionKey`       | `string`                           | Optional. Ensures state is restored only for the correct document. |
+| `disabledFeatures` | `string[]`                         | Optional. Features to hide: `"toolbar"`, `"find"`, `"zoom"`, `"pagination"`. |
+| `isLoading`        | `boolean`                          | Optional. Force the loading spinner state. |
+
+## Disabling Features
+
+```ts
+<CustomPdfViewer
+  file={file}
+  disabledFeatures={['rotation', 'find']}
+/>
+```
+
+## Styling
+
+```css
+:root {
+  /* Toolbar & Backgrounds */
+  --custom-pdf-toolbar-bg: #f9f9fa;
+  --custom-pdf-toolbar-border-color: #b8b8b8;
+  --custom-pdf-viewer-bg: #f1f5f9;
+  --custom-pdf-main-color: #181819;
+
+  /* Accent Colors */
+  --custom-pdf-accent-color: #0a84ff;
+  --custom-pdf-button-hover-color: #ddd;
+}
+```
+
+## License
+
+Apache-2.0 © Roland Arnold
